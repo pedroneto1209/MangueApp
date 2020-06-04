@@ -67,15 +67,15 @@ class _InitScreenState extends State<InitScreen> {
               ),
             ),
           ),
-          //Text(
-          //  'Olá, Conecte-se ao baja!',
-          //  textAlign: TextAlign.center,
-          //  style: TextStyle(
-          //    fontFamily: 'Ageoextrabold',
-          //    fontSize: 25,
-          //    color: textColor
-          //  ),
-          //)
+          Text(
+            'Olá, Conecte-se ao baja!',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'Ageoextrabold',
+              fontSize: 25,
+              color: textColor
+            ),
+          )
           ],
         ),
         decoration: new BoxDecoration(
