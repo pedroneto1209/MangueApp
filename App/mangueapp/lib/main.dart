@@ -23,6 +23,13 @@ class _InitScreenState extends State<InitScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      //Set appbar to control system icons color
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(0),
+        child: AppBar(
+          backgroundColor: backgroundUp,
+        )
+      ),
       body: Container(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
@@ -53,31 +60,43 @@ class _InitScreenState extends State<InitScreen> {
                 ],
               ),
             ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-            child: Container(
+            Container(
               height: 4,
               width: 345,
               color: Colors.transparent,
               child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: textColor,
                     borderRadius: BorderRadius.all(Radius.circular(10))
                 ),
               ),
             ),
-          ),
-          Text(
-            'Olá, Conecte-se ao baja!',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontFamily: 'Ageoextrabold',
-              fontSize: 25,
-              color: textColor
+            Padding(
+              padding: EdgeInsets.fromLTRB(0, 10, 0, 5),
+              child: Text(
+                'Olá, Conecte-se ao baja!',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'Ageoextrabold',
+                  fontSize: 25,
+                  color: textColor
+                ),
+              ),
             ),
-          )
+            //List of bluetooths
+            Container(
+              height: 250,
+              child: MediaQuery.removePadding(
+                context: context,
+                removeTop: true,
+                child: ListView(
+                  children: getList(),
+                ),
+              ),
+            ),
           ],
         ),
+        //Makes the gradient background
         decoration: new BoxDecoration(
           gradient: new LinearGradient(
               begin: FractionalOffset.topCenter,
@@ -87,6 +106,49 @@ class _InitScreenState extends State<InitScreen> {
           ),
         ),
       )
+    );
+  }
+
+  //List of bluetooths
+  List<Widget> getList() {
+    return [
+      option('HC - 06'),
+      option('AirPods de Rafael'),
+      option('Galei no cu da mãe onnn annn'),
+    ];
+  }
+
+  Widget option(String name) {
+    return Stack(
+      alignment: AlignmentDirectional.bottomCenter,
+      children: <Widget>[
+        Container(
+          height: 60,
+        ),
+        Positioned(
+          bottom: 20,
+          left: 60,
+          child: Text(
+            name,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'HP',
+              fontSize: 15,
+              color: textColor
+            ),
+          ),
+        ),
+        Container(
+          height: 2,
+          width: 330,
+          color: backgroundUp
+        ),
+        Positioned(
+          bottom: 20,
+          left: 33,
+          child: Image.asset('assets/images/bluetooth.png', width: 20),
+        ),
+      ],
     );
   }
 }

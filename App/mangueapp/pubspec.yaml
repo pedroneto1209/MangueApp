@@ -44,6 +44,9 @@ flutter:
     - family: Ageoextrabold
       fonts:
         - asset: assets/fonts/AgeoPersonalUse-ExtraBold.otf
+    - family: HP
+      fonts:
+        - asset: assets/fonts/hp-simplified.ttf
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
