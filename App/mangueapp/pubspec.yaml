@@ -47,6 +47,18 @@ flutter:
     - family: HP
       fonts:
         - asset: assets/fonts/hp-simplified.ttf
+    - family: Live
+      fonts:
+        - asset: assets/Logos/Live.ttf
+    - family: Emergency
+      fonts:
+        - asset: assets/Logos/Emergency.ttf
+    - family: Map
+      fonts:
+        - asset: assets/Logos/Map.ttf
+    - family: Server
+      fonts:
+        - asset: assets/Logos/Server.ttf
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

@@ -9,6 +9,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      initialRoute: 'Init',
+      routes: {
+        'Init': (context) => InitScreen(),
+        'Home': (context) => HomeScreen(),
+      },
       home: InitScreen(),
     );
   }
@@ -36,7 +41,7 @@ class _InitScreenState extends State<InitScreen> {
         child: Column(
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.fromLTRB(0, 85, 0, 0),
+              padding: EdgeInsets.fromLTRB(0, 65, 0, 0),
               child: Stack(
                 alignment: AlignmentDirectional.bottomCenter,
                 children: <Widget>[
@@ -94,6 +99,25 @@ class _InitScreenState extends State<InitScreen> {
                 ),
               ),
             ),
+            //Link pro home
+            GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, 'Home');
+              },
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(0, 42, 0, 0),
+                child: Text(
+                  'Não quer se conectar? clique aqui para acessar.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    decoration: TextDecoration.underline,
+                    fontFamily: 'Ageoextrabold',
+                    fontSize: 15,
+                    color: logoColor
+                  ),
+                ),
+              )
+            ),
           ],
         ),
         //Makes the gradient background
@@ -149,6 +173,93 @@ class _InitScreenState extends State<InitScreen> {
           child: Image.asset('assets/images/bluetooth.png', width: 20),
         ),
       ],
+    );
+  }
+}
+
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: DefaultTabController(
+        length: 5,
+        child:Container(
+          child: Scaffold(
+            backgroundColor: Colors.transparent,
+            body: TabBarView(
+              children: [
+                Container(
+                  //Makes the gradient background
+                  color: Colors.transparent,
+                ),
+                Container(
+                  //Makes the gradient background
+                  color: Colors.transparent,
+                ),
+                Container(
+                  //Makes the gradient background
+                  color: Colors.transparent,
+                ),
+                Container(
+                  //Makes the gradient background
+                  color: Colors.transparent,
+                ),
+                Container(
+                  //Makes the gradient background
+                  color: Colors.transparent,
+                ),
+              ],
+            ),
+            bottomNavigationBar: Container(
+              height: 70,
+              color: backgroundUp,
+              child: TabBar(
+                tabs: [
+                  Tab(
+                    icon: Icon(IconData(0xe900, fontFamily: 'Emergency'), size: 35,)
+                  ),
+                  Tab(
+                    icon: Icon(IconData(0xe902, fontFamily: 'Map'), size: 35,)
+                  ),
+                  Tab(
+                    icon: Icon(IconData(0xe901, fontFamily: 'Live'), size: 35,)
+                  ),
+                  Tab(
+                    icon: Icon(IconData(0xe903, fontFamily: 'Server'), size: 35,)
+                  ),
+                  Tab(
+                    icon: Icon(Icons.settings, size: 35)
+                  )
+                ],
+                labelColor: logoColor,
+                unselectedLabelColor: textColor,
+                indicatorSize: TabBarIndicatorSize.tab,
+                indicator: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(10),
+                    bottomRight: Radius.circular(10),
+                  ),
+                  color: backgroundDown,
+                )
+              ),
+            ),
+          ),
+          //set gradient background
+          decoration: new BoxDecoration(
+            gradient: new LinearGradient(
+                begin: FractionalOffset.topCenter,
+                end: FractionalOffset.bottomCenter,
+                stops: [0.10, 0.25, 0.5],
+                colors: [backgroundUp, backgroundMid, backgroundDown],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
