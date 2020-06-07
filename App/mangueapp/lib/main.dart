@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'models/circle.dart';
 import 'models/global.dart';
+//added for testing
+import "dart:math";
 
 void main() {
   runApp(MyApp());
@@ -138,7 +141,7 @@ class _InitScreenState extends State<InitScreen> {
     return [
       option('HC - 06'),
       option('AirPods de Rafael'),
-      option('Galei no cu da mãe onnn annn'),
+      option('Isso n é bluetooth de vdd'),
     ];
   }
 
@@ -183,37 +186,29 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  int vel = 0, rot = 0, tempo = 0, tempc = 0;
+  double acc = 0.0, press = 0.0;
+
+  //this part is to test
+  var vellist = [23, 24 ,25, 26];
+  var rotlist = [2000, 2200 , 2400, 2600];
+  var presslist = [2.8, 0.5 , 3.0, 0.3];
+  var acclist = [-0.42, -0.2 , 0.8, 1.01];
+  var tempolist = [92, 93];
+  var tempclist = [143, 142];
+  final _random = new Random();
+  //end of test
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: DefaultTabController(
+        initialIndex: 2,
         length: 5,
         child:Container(
           child: Scaffold(
             backgroundColor: Colors.transparent,
             body: TabBarView(
-              children: [
-                Container(
-                  //Makes the gradient background
-                  color: Colors.transparent,
-                ),
-                Container(
-                  //Makes the gradient background
-                  color: Colors.transparent,
-                ),
-                Container(
-                  //Makes the gradient background
-                  color: Colors.transparent,
-                ),
-                Container(
-                  //Makes the gradient background
-                  color: Colors.transparent,
-                ),
-                Container(
-                  //Makes the gradient background
-                  color: Colors.transparent,
-                ),
-              ],
+              children: getPages(),
             ),
             bottomNavigationBar: Container(
               height: 70,
@@ -226,9 +221,24 @@ class _HomeScreenState extends State<HomeScreen> {
                   Tab(
                     icon: Icon(IconData(0xe902, fontFamily: 'Map'), size: 35,)
                   ),
-                  Tab(
+                  //testing 
+                  GestureDetector(
+                  onTap: () {
+                  setState(() {
+                  this.vel = vellist[_random.nextInt(vellist.length)];
+                  this.rot = rotlist[_random.nextInt(rotlist.length)];
+                  this.press = presslist[_random.nextInt(presslist.length)];
+                  this.acc = acclist[_random.nextInt(acclist.length)];
+                  this.tempo = tempolist[_random.nextInt(tempolist.length)];
+                  this.tempc = tempclist[_random.nextInt(tempclist.length)];
+                  }
+                  );
+                },
+                  child: Tab(
                     icon: Icon(IconData(0xe901, fontFamily: 'Live'), size: 35,)
+                  )
                   ),
+                  //testing
                   Tab(
                     icon: Icon(IconData(0xe903, fontFamily: 'Server'), size: 35,)
                   ),
@@ -260,6 +270,101 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  List<Widget> getPages () {
+    return [
+      Container(
+      ), 
+      Container(
+      ),
+      Container(
+        child: GridView.count(
+          crossAxisCount: 2,
+          children: <Widget>[
+            liveitem('Velocidade', this.vel.toString(), this.vel/60, 'Km/h'),
+            liveitem('Rotação', this.rot.toString(), this.rot/4000, 'RPM'),
+            liveitem('Pressão do freio', this.press.toString(), this.press/11, 'Mpa'),
+            liveitem('Acelerações', this.acc.toString(), this.acc/4, 'g'),
+            liveitem('Temp. do óleo', this.tempo.toString(), this.tempo/180, '°C'),
+            liveitem('Temp. da CVT', this.tempc.toString(), this.tempc/350, '°C'),
+          ],
+        ),
+      ),
+      Container(
+        width: 300,
+        height: 300
+      ),
+      Container(
+      ),
+    ];
+  }
+
+  Widget liveitem(String name, String valor, double percent, String unity) {
+    return Column(
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.fromLTRB(0, 10, 0, 5),
+          child: Container(
+            height: 4,
+            width: 150,
+            color: Colors.transparent,
+            child: Container(
+                decoration: BoxDecoration(
+                  color: logoColor,
+                  borderRadius: BorderRadius.all(Radius.circular(10))
+              ),
+            ),
+          ),
+        ),
+        Text(
+          name,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontFamily: 'Ageoextrabold',
+            fontSize: 15,
+            color: logoColor
+          ),
+        ),
+        Padding(padding: EdgeInsets.fromLTRB(0, 9, 0, 0),
+          child: Stack(
+            alignment: AlignmentDirectional.center,
+            children: <Widget>[
+              Container(
+                width: 126,
+                child: CircleProgressBar(
+                  foregroundColor: logoColor,
+                  backgroundColor: circleBackground,
+                  value: percent
+                ),
+              ),
+              Text(
+                valor,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'HP',
+                  fontSize: 30,
+                  color: textColor
+                ),
+              ),
+              Positioned(child: Padding(
+                padding: const EdgeInsets.fromLTRB(0, 42, 0, 0),
+                child: Text(
+                  unity,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: 'HP',
+                    fontSize: 15,
+                    color: textColor
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ]
     );
   }
 }
