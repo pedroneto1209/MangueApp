@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'models/circle.dart';
 import 'models/global.dart';
+//map requirements
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+//import 'package:geolocator/geolocator.dart';
 //added for testing
 import "dart:math";
 
@@ -198,6 +201,23 @@ class _HomeScreenState extends State<HomeScreen> {
   var tempclist = [143, 142];
   final _random = new Random();
   //end of test
+
+  //map requirements
+  GoogleMapController mapController;
+  void _onMapCreated(GoogleMapController controller) {
+    mapController = controller;
+    _setMapStyle();
+  }
+
+  double lat = 45.521563;
+  double long = -122.677433;
+
+  void _setMapStyle() async {
+    String style = await DefaultAssetBundle.of(context).loadString('assets/map_style.json');
+    mapController.setMapStyle(style);
+  }
+  //end of map requirements
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -208,6 +228,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Scaffold(
             backgroundColor: Colors.transparent,
             body: TabBarView(
+              physics: NeverScrollableScrollPhysics(),
               children: getPages(),
             ),
             bottomNavigationBar: Container(
@@ -233,7 +254,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   this.tempc = tempclist[_random.nextInt(tempclist.length)];
                   }
                   );
-                },
+                  },
                   child: Tab(
                     icon: Icon(IconData(0xe901, fontFamily: 'Live'), size: 35,)
                   )
@@ -277,10 +298,59 @@ class _HomeScreenState extends State<HomeScreen> {
     return [
       Container(
       ), 
-      Container(
+      Stack(
+        alignment: AlignmentDirectional.bottomStart,
+        children: <Widget> [
+          Container(
+            child: GoogleMap(
+              onMapCreated: _onMapCreated,
+              initialCameraPosition: CameraPosition(
+                target: LatLng(lat, long),
+                zoom: 11.0,
+              ),
+            ),
+          ),
+          Stack(
+            alignment: AlignmentDirectional.center,
+            children: <Widget>[
+              Container(
+                height: 42,
+                width: 226,
+                color: Colors.transparent,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: backgroundDown,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      topRight: Radius.circular(10),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.5),
+                        spreadRadius: 5,
+                        blurRadius: 7,
+                        offset: Offset(0, 3), // changes position of shadow
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Text(
+                'Última velocidade máx.: 49 Km/h',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'HP',
+                  fontSize: 15,
+                  color: logoColor
+                ),
+              ),
+            ],
+          ),
+        ]
       ),
       Container(
         child: GridView.count(
+          physics: NeverScrollableScrollPhysics(),
           crossAxisCount: 2,
           children: <Widget>[
             liveitem('Velocidade', this.vel.toString(), this.vel/60, 'Km/h'),
@@ -293,10 +363,96 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       Container(
-        width: 300,
-        height: 300
+        child:
+        Center(
+          child: 
+          Column(
+            children: <Widget>[
+              Text(
+                'Pesquise os dados por data ou nome:',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'Ageo',
+                  fontSize: 18,
+                  color: logoColor
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
+                child: Container(
+                  height: 50,
+                  width: 345,
+                  color: Colors.transparent,
+                  child: Stack(
+                    children: <Widget>[
+                    Container(
+                      child: Padding(
+                      padding: EdgeInsets.fromLTRB(38, 0, 10, 9),
+                      child: TextField(
+                        style: TextStyle(
+                          fontFamily: 'Ageo',
+                          fontSize: 18,
+                          color: textColor
+                        ),
+                        maxLength: 28,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          errorBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
+                          counterText: '',
+                        ),
+                      ),
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        borderRadius: BorderRadius.all(Radius.circular(25)),
+                        border: Border.all(
+                          color: textColor,
+                          width: 2
+                        )
+                      ),
+                    ),
+                    Padding(padding: EdgeInsets.fromLTRB(10, 13, 0, 0),
+                    child: Icon(Icons.search, color: textColor)
+                    )
+                    ]
+                  ),
+                ),
+              ),
+            ],
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+          ),
+        ),
       ),
       Container(
+        child: MediaQuery.removePadding(
+          context: context,
+          removeTop: true,
+          child: ListView(
+            children: <Widget> [
+              Container(
+                height: 20,
+              ),
+              GestureDetector(
+                child: Container(child: option('Tema', Icon(Icons.style, color: logoColor))
+                ),
+                onTap: () {
+                  setState(() {
+                    backgroundUp = Colors.blue[200];
+                    backgroundMid = Colors.blue[100];
+                    backgroundDown = Colors.white;
+                    logoColor = Colors.blue;
+                    textColor = Colors.black;
+                  });
+                },
+              ),
+              option('Parâmetro do mapa', Icon(Icons.announcement, color: logoColor,))
+            ],
+          ),
+        ),
       ),
     ];
   }
@@ -365,6 +521,40 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ]
+    );
+  }
+
+  Widget option(String name, Widget icon) {
+    return Stack(
+      alignment: AlignmentDirectional.bottomCenter,
+      children: <Widget>[
+        Container(
+          height: 60,
+        ),
+        Positioned(
+          bottom: 20,
+          left: 60,
+          child: Text(
+            name,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'HP',
+              fontSize: 15,
+              color: textColor
+            ),
+          ),
+        ),
+        Container(
+          height: 2,
+          width: 330,
+          color: textColor
+        ),
+        Positioned(
+          bottom: 18,
+          left: 33,
+          child: icon
+        ),
+      ],
     );
   }
 }
