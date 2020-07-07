@@ -17,8 +17,10 @@ class User(db.Model):
     last_name = db.Column(db.String())
     password = db.Column(db.String())
     email = db.Column(db.String())
+    api_key = db.Column(db.String())
 
-    def __init__(self, username, first_name, last_name, password, email):
+    def __init__(self, api_key, username, first_name, last_name, password, email):
+        self.api_key = api_key
         self.username = username
         self.first_name = first_name
         self.last_name = last_name
@@ -36,4 +38,5 @@ class User(db.Model):
             'password' : self.password,
             'first_name' : self.first_name,
             'last_name' : self.last_name,
+            'api_key' : self.api_key
         }
