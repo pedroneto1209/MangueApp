@@ -6,6 +6,10 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 //import 'package:geolocator/geolocator.dart';
 //added for testing
 import "dart:math";
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'package:mangueapp/models/classes/user.dart';
+import 'package:mangueapp/bloc/blocs/user_bloc_provider.dart';
 
 void main() {
   runApp(MyApp());
@@ -33,6 +37,7 @@ class InitScreen extends StatefulWidget {
 class _InitScreenState extends State<InitScreen> {
   @override
   Widget build(BuildContext context) {
+    bloc.registerUser('aaaaaa', 'o', 'carai', 'mo', 'bbbbb');
     return Scaffold(
       //Set appbar to control system icons color
       appBar: PreferredSize(
@@ -362,70 +367,25 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
       ),
-      Container(
-        child:
-        Center(
-          child: 
-          Column(
-            children: <Widget>[
-              Text(
-                'Pesquise os dados por data ou nome:',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'Ageo',
-                  fontSize: 18,
-                  color: logoColor
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
-                child: Container(
-                  height: 50,
-                  width: 345,
-                  color: Colors.transparent,
-                  child: Stack(
-                    children: <Widget>[
-                    Container(
-                      child: Padding(
-                      padding: EdgeInsets.fromLTRB(38, 0, 10, 9),
-                      child: TextField(
-                        style: TextStyle(
-                          fontFamily: 'Ageo',
-                          fontSize: 18,
-                          color: textColor
-                        ),
-                        maxLength: 28,
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          errorBorder: InputBorder.none,
-                          disabledBorder: InputBorder.none,
-                          counterText: '',
-                        ),
-                      ),
-                      ),
-                      decoration: BoxDecoration(
-                        color: Colors.transparent,
-                        borderRadius: BorderRadius.all(Radius.circular(25)),
-                        border: Border.all(
-                          color: textColor,
-                          width: 2
-                        )
-                      ),
-                    ),
-                    Padding(padding: EdgeInsets.fromLTRB(10, 13, 0, 0),
-                    child: Icon(Icons.search, color: textColor)
-                    )
-                    ]
-                  ),
-                ),
-              ),
-            ],
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-          ),
-        ),
+      FutureBuilder(
+        future: getUser(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          if (snapshot.connectionState == ConnectionState.none &&
+              snapshot.hasData == null) {
+            //print('project snapshot data is: ${projectSnap.data}');
+            return Container();
+          }
+          return ListView.builder(
+            itemCount: snapshot.data.length,
+            itemBuilder: (context, index) {
+              return Column(
+                children: <Widget>[
+                  // Widget to display the list of project
+                ],
+              );
+            },
+          );
+        }
       ),
       Container(
         child: MediaQuery.removePadding(
@@ -455,6 +415,30 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     ];
+  }
+
+  Future getUser() async {
+    var result = await http.get('http://127.0.0.1:5000/api/register');
+    print(result.body);
+    return result;
+    //String apiKey = await getApiKey();
+    //if (apiKey.length <= 0) {
+    //  //o usuário não logou
+
+    //} else {
+
+    //}
+  }
+
+  Future<String> getApiKey() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String apiKey;
+    try {
+      apiKey = prefs.getString('API_token');
+    } catch (Exception) {
+      apiKey = "";
+    }
+    return apiKey;
   }
 
   Widget liveitem(String name, String valor, double percent, String unity) {

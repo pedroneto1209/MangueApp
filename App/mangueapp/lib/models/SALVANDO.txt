@@ -1,0 +1,65 @@
+Container(
+        child:
+        Center(
+          child: 
+          Column(
+            children: <Widget>[
+              Text(
+                'Pesquise os dados por data ou nome:',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'Ageo',
+                  fontSize: 18,
+                  color: logoColor
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
+                child: Container(
+                  height: 50,
+                  width: 345,
+                  color: Colors.transparent,
+                  child: Stack(
+                    children: <Widget>[
+                    Container(
+                      child: Padding(
+                      padding: EdgeInsets.fromLTRB(38, 0, 10, 9),
+                      child: TextField(
+                        style: TextStyle(
+                          fontFamily: 'Ageo',
+                          fontSize: 18,
+                          color: textColor
+                        ),
+                        maxLength: 28,
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          errorBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
+                          counterText: '',
+                        ),
+                      ),
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        borderRadius: BorderRadius.all(Radius.circular(25)),
+                        border: Border.all(
+                          color: textColor,
+                          width: 2
+                        )
+                      ),
+                    ),
+                    Padding(padding: EdgeInsets.fromLTRB(10, 13, 0, 0),
+                    child: Icon(Icons.search, color: textColor)
+                    )
+                    ]
+                  ),
+                ),
+              ),
+            ],
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+          ),
+        ),
+      )
