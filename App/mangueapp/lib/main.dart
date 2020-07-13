@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mangueapp/debug/loginscreen.dart';
 import 'models/circle.dart';
 import 'models/global.dart';
 //map requirements
@@ -10,7 +11,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 import 'package:mangueapp/models/classes/user.dart';
 import 'package:mangueapp/bloc/blocs/user_bloc_provider.dart';
-
 void main() {
   runApp(MyApp());
 }
@@ -23,8 +23,10 @@ class MyApp extends StatelessWidget {
       routes: {
         'Init': (context) => InitScreen(),
         'Home': (context) => HomeScreen(),
+        //'Home' : (context) => LoginPage(),
       },
       home: InitScreen(),
+      //home: LoginPage(),
     );
   }
 }
@@ -37,7 +39,6 @@ class InitScreen extends StatefulWidget {
 class _InitScreenState extends State<InitScreen> {
   @override
   Widget build(BuildContext context) {
-    bloc.registerUser('aaaaaa', 'o', 'carai', 'mo', 'bbbbb');
     return Scaffold(
       //Set appbar to control system icons color
       appBar: PreferredSize(
@@ -197,6 +198,9 @@ class _HomeScreenState extends State<HomeScreen> {
   int vel = 0, rot = 0, tempo = 0, tempc = 0;
   double acc = 0.0, press = 0.0;
 
+  TextEditingController usernameText = new TextEditingController();
+  TextEditingController passwordText = new TextEditingController();
+
   //this part is to test
   var vellist = [23, 24 ,25, 26];
   var rotlist = [2000, 2200 , 2400, 2600];
@@ -228,7 +232,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return MaterialApp(
       home: DefaultTabController(
         initialIndex: 2,
-        length: 5,
+        length: 4,
         child:Container(
           child: Scaffold(
             backgroundColor: Colors.transparent,
@@ -237,39 +241,34 @@ class _HomeScreenState extends State<HomeScreen> {
               children: getPages(),
             ),
             bottomNavigationBar: Container(
-              height: 70,
+              height: 65,
               color: backgroundUp,
               child: TabBar(
                 tabs: [
                   Tab(
-                    icon: Icon(IconData(0xe900, fontFamily: 'Emergency'), size: 35,)
+                    icon: Icon(IconData(0xe902, fontFamily: 'Map'), size: 30)
                   ),
-                  Tab(
-                    icon: Icon(IconData(0xe902, fontFamily: 'Map'), size: 35,)
-                  ),
-                  //testing 
                   GestureDetector(
                   onTap: () {
-                  setState(() {
-                  this.vel = vellist[_random.nextInt(vellist.length)];
-                  this.rot = rotlist[_random.nextInt(rotlist.length)];
-                  this.press = presslist[_random.nextInt(presslist.length)];
-                  this.acc = acclist[_random.nextInt(acclist.length)];
-                  this.tempo = tempolist[_random.nextInt(tempolist.length)];
-                  this.tempc = tempclist[_random.nextInt(tempclist.length)];
+                  setState((){
+                    this.vel = vellist[_random.nextInt(vellist.length)];
+                    this.rot = rotlist[_random.nextInt(rotlist.length)];
+                    this.press = presslist[_random.nextInt(presslist.length)];
+                    this.acc = acclist[_random.nextInt(acclist.length)];
+                    this.tempo = tempolist[_random.nextInt(tempolist.length)];
+                    this.tempc = tempclist[_random.nextInt(tempclist.length)];
                   }
                   );
                   },
                   child: Tab(
-                    icon: Icon(IconData(0xe901, fontFamily: 'Live'), size: 35,)
+                    icon: Icon(IconData(0xe901, fontFamily: 'Live'), size: 30)
                   )
                   ),
-                  //testing
                   Tab(
-                    icon: Icon(IconData(0xe903, fontFamily: 'Server'), size: 35,)
+                    icon: Icon(IconData(0xe903, fontFamily: 'Server'), size: 30)
                   ),
                   Tab(
-                    icon: Icon(Icons.settings, size: 35)
+                    icon: Icon(Icons.settings, size: 30)
                   )
                 ],
                 labelColor: logoColor,
@@ -301,8 +300,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   List<Widget> getPages () {
     return [
-      Container(
-      ), 
       Stack(
         alignment: AlignmentDirectional.bottomStart,
         children: <Widget> [
@@ -366,26 +363,18 @@ class _HomeScreenState extends State<HomeScreen> {
             liveitem('Temp. da CVT', this.tempc.toString(), this.tempc/350, '°C'),
           ],
         ),
-      ),
+      ),     
       FutureBuilder(
-        future: getUser(),
+        future: getApiKey(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.connectionState == ConnectionState.none &&
-              snapshot.hasData == null) {
-            //print('project snapshot data is: ${projectSnap.data}');
-            return Container();
+          String apiKey = '';
+          if (snapshot.hasData){
+            apiKey = snapshot.data;
+          } else{
           }
-          return ListView.builder(
-            itemCount: snapshot.data.length,
-            itemBuilder: (context, index) {
-              return Column(
-                children: <Widget>[
-                  // Widget to display the list of project
-                ],
-              );
-            },
-          );
-        }
+
+          return apiKey.length > 0 ? databasewidget() : LoginPage(login: login, newUser: false);
+        },
       ),
       Container(
         child: MediaQuery.removePadding(
@@ -409,7 +398,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   });
                 },
               ),
-              option('Parâmetro do mapa', Icon(Icons.announcement, color: logoColor,))
+              option('Parâmetro do mapa', Icon(Icons.announcement, color: logoColor,)),
+              GestureDetector(
+                child: Container(child: option('Logout', Icon(Icons.local_grocery_store, color: logoColor))),
+                onTap: () {
+                  logout();
+                }
+              )
             ],
           ),
         ),
@@ -417,28 +412,77 @@ class _HomeScreenState extends State<HomeScreen> {
     ];
   }
 
-  Future getUser() async {
-    var result = await http.get('http://127.0.0.1:5000/api/register');
-    print(result.body);
-    return result;
-    //String apiKey = await getApiKey();
-    //if (apiKey.length <= 0) {
-    //  //o usuário não logou
-
-    //} else {
-
-    //}
+  Widget databasewidget(){
+    return Container(
+      child:
+      Center(
+        child: 
+        Column(
+          children: <Widget>[
+            Text(
+              'Pesquise os dados por data ou nome:',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: 'Ageo',
+                fontSize: 18,
+                color: logoColor
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
+              child: Container(
+                height: 50,
+                width: 345,
+                color: Colors.transparent,
+                child: Stack(
+                  children: <Widget>[
+                  Container(
+                    child: Padding(
+                    padding: EdgeInsets.fromLTRB(38, 0, 10, 9),
+                    child: TextField(
+                      style: TextStyle(
+                        fontFamily: 'Ageo',
+                        fontSize: 18,
+                        color: textColor
+                      ),
+                      maxLength: 28,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        errorBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                        counterText: '',
+                      ),
+                    ),
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.transparent,
+                      borderRadius: BorderRadius.all(Radius.circular(25)),
+                      border: Border.all(
+                        color: textColor,
+                        width: 2
+                      )
+                    ),
+                  ),
+                  Padding(padding: EdgeInsets.fromLTRB(10, 13, 0, 0),
+                  child: Icon(Icons.search, color: textColor)
+                  )
+                  ]
+                ),
+              ),
+            ),
+          ],
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+        ),
+      ),
+    );
   }
 
-  Future<String> getApiKey() async {
+  Future getApiKey() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String apiKey;
-    try {
-      apiKey = prefs.getString('API_token');
-    } catch (Exception) {
-      apiKey = "";
-    }
-    return apiKey;
+    return await prefs.getString('API_Token');
   }
 
   Widget liveitem(String name, String valor, double percent, String unity) {
@@ -541,4 +585,23 @@ class _HomeScreenState extends State<HomeScreen> {
       ],
     );
   }
+
+  logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('API_Token', '');
+    setState(() {
+      build(context);
+    });
+  }
+
+  void login() {
+    setState(() {
+      build(context);
+    });
+  }
+
+  @override
+    void initState() {
+      super.initState();
+    }
 }

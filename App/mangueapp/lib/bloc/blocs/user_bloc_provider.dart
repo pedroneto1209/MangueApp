@@ -13,6 +13,11 @@ class UserBloc {
     _userGetter.sink.add(user);
   }
 
+  signinUser(String username, String password) async {
+    User user = await _repository.signinUser(username, password);
+    _userGetter.sink.add(user);
+  }
+
   dispose() {
     _userGetter.close();
   }

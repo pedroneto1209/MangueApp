@@ -12,8 +12,8 @@ class User {
   
   User(this.username, this.lastname, this.firstname, this.email, this.password, this.api_key, this.id);
 
-  User.fromJson(Map<String, dynamic> parsedJson) {
-    User user = new User(
+  factory User.fromJson(Map<String, dynamic> parsedJson) {
+    return User(
       parsedJson['username'],
       parsedJson['last_name'],
       parsedJson['first_name'],
