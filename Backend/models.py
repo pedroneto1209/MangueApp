@@ -40,3 +40,30 @@ class User(db.Model):
             'last_name' : self.last_name,
             'api_key' : self.api_key
         }
+
+class Graph(db.Model):
+    __tablename__ = 'graphs'
+
+    id = db.Column(db.Integer(), primary_key=True)
+    user_id = db.Column(db.Integer(), db.ForeignKey('users.id'))
+    data = db.Column(db.String())
+    typedata = db.Column(db.String())
+    date = db.Column(db.String())
+
+    def __init__(self, user_id, data, typedata, date):
+        self.user_id = user_id
+        self.data = data
+        self.typedata = typedata
+        self.date = date
+
+    def __repr__(self):
+        return '<id {}>'.format(self.id)
+
+    def serialize(self):
+        return {
+            'user_id' : self.user_id,
+            'id' : self.id,
+            'data' : self.data,
+            'typedata' : self.typedata,
+            'date' : self.date
+        }

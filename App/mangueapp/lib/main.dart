@@ -365,7 +365,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),     
       FutureBuilder(
-        future: getApiKey(),
+        future: signinUser(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           String apiKey = '';
           if (snapshot.hasData){
@@ -478,6 +478,17 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  Future signinUser() async {
+    String userName = "";
+    String apiKey = await getApiKey();
+    if (apiKey.length > 0) {
+      bloc.signinUser("", "", apiKey);
+    } else {
+      print("No api key");
+    }
+    return apiKey;
   }
 
   Future getApiKey() async {
