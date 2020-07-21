@@ -1,8 +1,14 @@
 import 'dart:async';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
-import 'package:mangueapp/models/UI/global.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+
+Color backgroundDown = Color(0xFF101820);
+Color backgroundMid = Color(0xFF090D11);
+Color backgroundUp = Color(0xFF000000);
+Color textColor = Color(0xFFFFFFFF);
+Color logoColor = Color(0xFF087234);
+Color circleBackground = Color(0xFF666666);
 
 class InitScreen extends StatefulWidget {
   @override
@@ -20,6 +26,16 @@ class _InitScreenState extends State<InitScreen> {
   @override
   void initState() {
     super.initState();
+
+    if (read('colorBackD') != null) {
+      read('colorBackD').then((value) {backgroundDown = Color(value);});
+      read('colorBackM').then((value) {backgroundMid = Color(value);});
+      read('colorBackU').then((value) {backgroundUp = Color(value);});
+      read('colorText').then((value) {textColor = Color(value);});
+      read('colorLogo').then((value) {logoColor = Color(value);});
+      read('colorCircle').then((value) {circleBackground = Color(value);});
+    }
+
     //checks bluetooth current state
     FlutterBlue.instance.state.listen((state) {
       if (state == BluetoothState.off) {
@@ -55,6 +71,12 @@ class _InitScreenState extends State<InitScreen> {
         });
       }
     });
+  }
+
+  Future<int> read(String cor) async {
+    final prefs = await SharedPreferences.getInstance();
+    final value = prefs.getInt(cor);
+    return value;
   }
 
   void scanForDevices() async {

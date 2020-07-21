@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'global.dart';
+import 'package:mangueapp/init.dart';
 
 class DataBasePage extends StatefulWidget {
   @override

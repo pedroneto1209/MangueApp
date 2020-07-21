@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mangueapp/bloc/blocs/user_bloc_provider.dart';
-import 'package:mangueapp/models/UI/global.dart';
+import 'package:mangueapp/init.dart';
 
 class LoginPage extends StatefulWidget {
   final VoidCallback login;
@@ -56,6 +56,13 @@ class _LoginPageState extends State<LoginPage> {
               child: Padding(
               padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
                 child: TextField(
+                  onSubmitted: (value) {
+                    if (usernameText.text != null || passwordText.text != null){
+                      userBloc.signinUser(usernameText.text, passwordText.text, "").then((_){
+                        widget.login();
+                      });
+                    }
+                  },
                   controller: usernameText,
                   style: TextStyle(
                     fontFamily: 'Ageo',
@@ -99,6 +106,13 @@ class _LoginPageState extends State<LoginPage> {
                 child: Padding(
                   padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
                   child: TextField(
+                    onSubmitted: (value) {
+                      if (usernameText.text != null || passwordText.text != null){
+                        userBloc.signinUser(usernameText.text, passwordText.text, "").then((_){
+                          widget.login();
+                        });
+                      }
+                    },
                     controller: passwordText,
                     obscureText: true,
                     style: TextStyle(

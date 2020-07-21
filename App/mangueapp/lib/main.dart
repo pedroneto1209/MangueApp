@@ -3,7 +3,6 @@ import 'package:mangueapp/models/UI/database.dart';
 import 'package:mangueapp/models/UI/loginscreen.dart';
 import 'package:mangueapp/models/UI/theme.dart';
 import 'models/UI/circle.dart';
-import 'models/UI/global.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import "dart:math";
 import 'package:shared_preferences/shared_preferences.dart';
@@ -226,25 +225,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 20,
               ),
               GestureDetector(
-                child: Container(child: option('Tema', Icon(Icons.format_paint, color: logoColor))
+                child: Container(color: Colors.transparent, child: option('Tema', Icon(Icons.format_paint, color: logoColor))
                 ),
                 onTap: () {
                   Navigator.pushNamed(context, 'Theme');
                 },
               ),
-              option('Parâmetro do mapa', Icon(Icons.announcement, color: logoColor,)),
               GestureDetector(
-                child: Container(child: option('Logout', Icon(Icons.local_grocery_store, color: logoColor))),
+                child: Container(color: Colors.transparent, child: option('Conectar ao bluetooth', Icon(Icons.bluetooth, color: logoColor))),
+                onTap: () {
+                  Navigator.pushNamed(context, 'Init');
+                }
+              ),
+              GestureDetector(
+                child: Container(color: Colors.transparent, child: option('Logout', Icon(Icons.exit_to_app, color: logoColor))),
                 onTap: () {
                   logout();
                 }
               ),
-              GestureDetector(
-                child: Container(child: option('Conectar ao bluetooth', Icon(Icons.bluetooth, color: logoColor))),
-                onTap: () {
-                  Navigator.pushNamed(context, 'Init');
-                }
-              )
             ],
           ),
         ),
@@ -312,32 +310,35 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            GestureDetector(
-              onTap: () {
-                Navigator.pushNamed(context, 'DataBase');
-              },
-              child: Container(
-                height: 30,
-                width: 130,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
-                  child: Text(
-                    'Login',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: 'Ageoextrabold',
-                      fontSize: 18,
-                      color: textColor
+            Padding(
+              padding: EdgeInsets.fromLTRB(0, 30, 0, 0),
+              child: GestureDetector(
+                onTap: () {
+                  Navigator.pushNamed(context, 'DataBase');
+                },
+                child: Container(
+                  height: 30,
+                  width: 130,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+                    child: Text(
+                      'Pesquisar',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'Ageoextrabold',
+                        fontSize: 18,
+                        color: textColor
+                      )
+                    ),
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.transparent,
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                    border: Border.all(
+                      color: textColor,
+                      width: 1
                     )
                   ),
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.transparent,
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                  border: Border.all(
-                    color: textColor,
-                    width: 1
-                  )
                 ),
               ),
             ),
