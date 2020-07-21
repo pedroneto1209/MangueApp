@@ -13,17 +13,17 @@ class User(db.Model):
 
     id = db.Column(db.Integer(), primary_key=True)
     username = db.Column(db.String(), unique=True)
-    first_name = db.Column(db.String())
-    last_name = db.Column(db.String())
+    firstname = db.Column(db.String())
+    lastname = db.Column(db.String())
     password = db.Column(db.String())
     email = db.Column(db.String())
-    api_key = db.Column(db.String())
+    apiKey = db.Column(db.String())
 
-    def __init__(self, api_key, username, first_name, last_name, password, email):
-        self.api_key = api_key
+    def __init__(self, apiKey, username, firstname, lastname, password, email):
+        self.apiKey = apiKey
         self.username = username
-        self.first_name = first_name
-        self.last_name = last_name
+        self.firstname = firstname
+        self.lastname = lastname
         self.password = password
         self.email = email
 
@@ -36,22 +36,22 @@ class User(db.Model):
             'email' : self.email,
             'username' : self.username,
             'password' : self.password,
-            'first_name' : self.first_name,
-            'last_name' : self.last_name,
-            'api_key' : self.api_key
+            'firstname' : self.firstname,
+            'lastname' : self.lastname,
+            'apiKey' : self.apiKey
         }
 
 class Graph(db.Model):
     __tablename__ = 'graphs'
 
     id = db.Column(db.Integer(), primary_key=True)
-    user_id = db.Column(db.Integer(), db.ForeignKey('users.id'))
+    userId = db.Column(db.Integer(), db.ForeignKey('users.id'))
     data = db.Column(db.String())
     typedata = db.Column(db.String())
     date = db.Column(db.String())
 
-    def __init__(self, user_id, data, typedata, date):
-        self.user_id = user_id
+    def __init__(self, userId, data, typedata, date):
+        self.userId = userId
         self.data = data
         self.typedata = typedata
         self.date = date
@@ -61,7 +61,7 @@ class Graph(db.Model):
 
     def serialize(self):
         return {
-            'user_id' : self.user_id,
+            'userId' : self.userId,
             'id' : self.id,
             'data' : self.data,
             'typedata' : self.typedata,

@@ -5,9 +5,7 @@ import random
 import string
 
 class Signin(Resource):
-    #qualquer POST request no route register vem parar nessa função
     def post(self):
-        #checa se recebeu request
         result = ""
         json_data = request.get_json(force=True)
         header = request.headers["Authorization"]
@@ -15,7 +13,7 @@ class Signin(Resource):
         if not header:
             result = self.username_and_password_signin(json_data)
         else:
-            user = User.query.filter_by(api_key=header).first()
+            user = User.query.filter_by(apiKey=header).first()
             if user:
                 result = User.serialize(user)
             else:

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mangueapp/bloc/blocs/user_bloc_provider.dart';
-import 'package:mangueapp/models/classes/user.dart';
-import 'package:mangueapp/models/global.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:mangueapp/models/UI/global.dart';
 
 class LoginPage extends StatefulWidget {
   final VoidCallback login;
@@ -142,7 +140,7 @@ class _LoginPageState extends State<LoginPage> {
             GestureDetector(
               onTap: () {
                 if (usernameText.text != null || passwordText.text != null){
-                  bloc.signinUser(usernameText.text, passwordText.text, "").then((_){
+                  userBloc.signinUser(usernameText.text, passwordText.text, "").then((_){
                     widget.login();
                   });
                 }
@@ -209,7 +207,7 @@ class _LoginPageState extends State<LoginPage> {
         color: Colors.red,
         child: Text('sign up'),
         onPressed: () {
-          bloc.registerUser(usernameCont.text, firstCont.text, '', passwordCont.text, emailCont.text).then((_) {
+          userBloc.registerUser(usernameCont.text, firstCont.text, '', passwordCont.text, emailCont.text).then((_) {
             widget.login();
           });
         }

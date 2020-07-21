@@ -14,10 +14,10 @@ class Graphs(Resource):
         if not header:
             return {'Message': 'No API key'}, 400
         else:
-            user = User.query.filter_by(api_key=header).first()
+            user = User.query.filter_by(apiKey=header).first()
             if user:
                 graph = Graph(
-                    user_id = user.id,
+                    userId = user.id,
                     data = json_data['data'],
                     typedata = json_data['typedata'],
                     date = json_data['date'],
@@ -39,9 +39,9 @@ class Graphs(Resource):
         if not header:
             return {'Message': 'No API key'}, 400
         else:
-            user = User.query.filter_by(api_key=header).first()
+            user = User.query.filter_by(apiKey=header).first()
             if user:
-                graphs = Graph.query.filter_by(user_id = user.id).all()
+                graphs = Graph.query.filter_by(userId = user.id).all()
                 for i in graphs:
                     result.append(Graph.serialize(i))
 

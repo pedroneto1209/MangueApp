@@ -1,3 +1,4 @@
+import 'package:mangueapp/models/classes/graph.dart';
 import '../resources/repository.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:mangueapp/models/classes/user.dart';
@@ -6,7 +7,7 @@ class UserBloc {
   final _repository = Repository();
   final _userGetter = PublishSubject<User>();
 
-  Observable<User> get getUser => _userGetter.stream;
+  Stream<User> get getUser => _userGetter.stream;
 
   registerUser(String username, String firstname, String lastname, String password, String email) async {
     User user = await _repository.registerUser(username, firstname, lastname, password, email);
@@ -23,4 +24,21 @@ class UserBloc {
   }
 }
 
-final bloc = UserBloc();
+class GraphBloc {
+  final _repository = Repository();
+  final _graphGetter = PublishSubject<List<Graph>>();
+
+  Stream<List<Graph>> get getGraphs => _graphGetter.stream;
+
+  getGraphics(String apiKey) async {
+    List<Graph> graphs = await _repository.getGraphs(apiKey);
+    _graphGetter.sink.add(graphs);
+  }
+
+  dispose() {
+    _graphGetter.close();
+  }
+}
+
+final graphsBloc = GraphBloc();
+final userBloc = UserBloc();

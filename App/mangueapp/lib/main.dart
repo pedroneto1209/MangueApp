@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:mangueapp/debug/loginscreen.dart';
-import 'models/circle.dart';
-import 'models/global.dart';
-//map requirements
+import 'package:mangueapp/models/UI/database.dart';
+import 'package:mangueapp/models/UI/loginscreen.dart';
+import 'package:mangueapp/models/UI/theme.dart';
+import 'models/UI/circle.dart';
+import 'models/UI/global.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-//import 'package:geolocator/geolocator.dart';
-//added for testing
 import "dart:math";
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-import 'package:mangueapp/models/classes/user.dart';
 import 'package:mangueapp/bloc/blocs/user_bloc_provider.dart';
+import 'package:mangueapp/init.dart';
 void main() {
   runApp(MyApp());
 }
@@ -23,168 +21,10 @@ class MyApp extends StatelessWidget {
       routes: {
         'Init': (context) => InitScreen(),
         'Home': (context) => HomeScreen(),
-        //'Home' : (context) => LoginPage(),
+        'DataBase': (context) => DataBasePage(),
+        'Theme': (context) => ThemeScreen(),
       },
-      home: InitScreen(),
-      //home: LoginPage(),
-    );
-  }
-}
-
-class InitScreen extends StatefulWidget {
-  @override
-  _InitScreenState createState() => _InitScreenState();
-}
-
-class _InitScreenState extends State<InitScreen> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      //Set appbar to control system icons color
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(0),
-        child: AppBar(
-          backgroundColor: backgroundUp,
-        )
-      ),
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        child: Column(
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.fromLTRB(0, 65, 0, 0),
-              child: Stack(
-                alignment: AlignmentDirectional.bottomCenter,
-                children: <Widget>[
-                    Container(
-                      height: 180,
-                      width: 292
-                    ),
-                  Positioned(
-                    bottom: 50,
-                    child: Image.asset('assets/images/HeaderLogo.png', width: 134),
-                  ),
-                  Text(
-                    'mangue',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: 'Ageoextrabold',
-                      fontSize: 80,
-                      color: logoColor
-                    )
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              height: 4,
-              width: 345,
-              color: Colors.transparent,
-              child: Container(
-                  decoration: BoxDecoration(
-                    color: textColor,
-                    borderRadius: BorderRadius.all(Radius.circular(10))
-                ),
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(0, 10, 0, 5),
-              child: Text(
-                'Olá, Conecte-se ao baja!',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'Ageoextrabold',
-                  fontSize: 25,
-                  color: textColor
-                ),
-              ),
-            ),
-            //List of bluetooths
-            Container(
-              height: 250,
-              child: MediaQuery.removePadding(
-                context: context,
-                removeTop: true,
-                child: ListView(
-                  children: getList(),
-                ),
-              ),
-            ),
-            //Link pro home
-            GestureDetector(
-              onTap: () {
-                Navigator.pushNamed(context, 'Home');
-              },
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(0, 42, 0, 0),
-                child: Text(
-                  'Não quer se conectar? clique aqui para acessar.',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    decoration: TextDecoration.underline,
-                    fontFamily: 'Ageoextrabold',
-                    fontSize: 15,
-                    color: logoColor
-                  ),
-                ),
-              )
-            ),
-          ],
-        ),
-        //Makes the gradient background
-        decoration: new BoxDecoration(
-          gradient: new LinearGradient(
-              begin: FractionalOffset.topCenter,
-              end: FractionalOffset.bottomCenter,
-              stops: [0.10, 0.25, 0.5],
-              colors: [backgroundUp, backgroundMid, backgroundDown],
-          ),
-        ),
-      )
-    );
-  }
-
-  //List of bluetooths
-  List<Widget> getList() {
-    return [
-      option('HC - 06'),
-      option('AirPods de Rafael'),
-      option('Isso n é bluetooth de vdd'),
-    ];
-  }
-
-  Widget option(String name) {
-    return Stack(
-      alignment: AlignmentDirectional.bottomCenter,
-      children: <Widget>[
-        Container(
-          height: 60,
-        ),
-        Positioned(
-          bottom: 20,
-          left: 60,
-          child: Text(
-            name,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontFamily: 'HP',
-              fontSize: 15,
-              color: textColor
-            ),
-          ),
-        ),
-        Container(
-          height: 2,
-          width: 330,
-          color: backgroundUp
-        ),
-        Positioned(
-          bottom: 20,
-          left: 33,
-          child: Image.asset('assets/images/bluetooth.png', width: 20),
-        ),
-      ],
+      home: InitScreen()
     );
   }
 }
@@ -386,16 +226,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 height: 20,
               ),
               GestureDetector(
-                child: Container(child: option('Tema', Icon(Icons.style, color: logoColor))
+                child: Container(child: option('Tema', Icon(Icons.format_paint, color: logoColor))
                 ),
                 onTap: () {
-                  setState(() {
-                    backgroundUp = Colors.blue[200];
-                    backgroundMid = Colors.blue[100];
-                    backgroundDown = Colors.white;
-                    logoColor = Colors.blue;
-                    textColor = Colors.black;
-                  });
+                  Navigator.pushNamed(context, 'Theme');
                 },
               ),
               option('Parâmetro do mapa', Icon(Icons.announcement, color: logoColor,)),
@@ -403,6 +237,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Container(child: option('Logout', Icon(Icons.local_grocery_store, color: logoColor))),
                 onTap: () {
                   logout();
+                }
+              ),
+              GestureDetector(
+                child: Container(child: option('Conectar ao bluetooth', Icon(Icons.bluetooth, color: logoColor))),
+                onTap: () {
+                  Navigator.pushNamed(context, 'Init');
                 }
               )
             ],
@@ -472,6 +312,35 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
+            GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, 'DataBase');
+              },
+              child: Container(
+                height: 30,
+                width: 130,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+                  child: Text(
+                    'Login',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontFamily: 'Ageoextrabold',
+                      fontSize: 18,
+                      color: textColor
+                    )
+                  ),
+                ),
+                decoration: BoxDecoration(
+                  color: Colors.transparent,
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                  border: Border.all(
+                    color: textColor,
+                    width: 1
+                  )
+                ),
+              ),
+            ),
           ],
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
@@ -481,10 +350,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future signinUser() async {
-    String userName = "";
     String apiKey = await getApiKey();
     if (apiKey.length > 0) {
-      bloc.signinUser("", "", apiKey);
+      userBloc.signinUser("", "", apiKey);
     } else {
       print("No api key");
     }
@@ -493,7 +361,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Future getApiKey() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return await prefs.getString('API_Token');
+    return prefs.getString('APIToken');
   }
 
   Widget liveitem(String name, String valor, double percent, String unity) {
@@ -599,7 +467,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('API_Token', '');
+    await prefs.setString('APIToken', '');
     setState(() {
       build(context);
     });

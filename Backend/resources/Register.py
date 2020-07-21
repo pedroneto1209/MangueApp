@@ -30,17 +30,17 @@ class Register(Resource):
         if user:
             return {'message': 'email já registrado'}, 400
         #gera a chave e checa se ela ja foi registrada
-        api_key = self.generate_key()
-        user = User.query.filter_by(api_key=api_key).first()
+        apiKey = self.generate_key()
+        user = User.query.filter_by(apiKey=apiKey).first()
         if user:
             return {'message': 'Chave API já registrado'}, 400
 
 
         #registra o novo usuário e retorna seus dados registrados
         user = User(
-            api_key = api_key,
-            first_name = json_data['first_name'],
-            last_name = json_data['last_name'],
+            apiKey = apiKey,
+            firstname = json_data['firstname'],
+            lastname = json_data['lastname'],
             email = json_data['email'],
             password = json_data['password'],
             username = json_data['username']
