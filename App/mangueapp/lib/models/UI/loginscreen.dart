@@ -34,7 +34,7 @@ class _LoginPageState extends State<LoginPage> {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Image.asset('assets/images/crab.png', width: 134),
+        Image.asset(crab, width: 134),
         Padding(padding: EdgeInsets.fromLTRB(0, 10, 0, 45),
           child: Text(
             'Manguezal',

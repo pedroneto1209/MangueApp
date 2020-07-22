@@ -30,6 +30,8 @@ class _ThemeScreenState extends State<ThemeScreen> {
                   save('colorText', 0xFFFFFFFF);
                   save('colorLogo', 0xFF087234);
                   save('colorCircle', 0xFF666666);
+                  saves('colorImg', 'assets/Icons/Header/manguebeat.png');
+                  saves('colorImgC', 'assets/Icons/Crab/manguebeat.png');
                   setState(() {
                     backgroundDown = Color(0xFF101820);
                     backgroundMid = Color(0xFF090D11);
@@ -37,6 +39,8 @@ class _ThemeScreenState extends State<ThemeScreen> {
                     textColor = Color(0xFFFFFFFF);
                     logoColor = Color(0xFF087234);
                     circleBackground = Color(0xFF666666);
+                    img = 'assets/Icons/Header/manguebeat.png';
+                    crab = 'assets/Icons/Crab/manguebeat.png';
                     Navigator.pushNamed(context, 'Home');
                   });
                 },
@@ -51,6 +55,8 @@ class _ThemeScreenState extends State<ThemeScreen> {
                   save('colorText', 0xFF000000);
                   save('colorLogo', 0xFF000000);
                   save('colorCircle', 0xFF6F7C80);
+                  saves('colorImg', 'assets/Icons/Header/caxanga.png');
+                  saves('colorImgC', 'assets/Icons/Crab/caxanga.png');
                   setState(() {
                     backgroundDown = Color(0xFFF2F3F4);
                     backgroundMid = Color(0xFFDADEDF);
@@ -58,6 +64,8 @@ class _ThemeScreenState extends State<ThemeScreen> {
                     textColor = Color(0xFF000000);
                     logoColor = Color(0xFF000000);
                     circleBackground = Color(0xFF6F7C80);
+                    img = 'assets/Icons/Header/caxanga.png';
+                    crab = 'assets/Icons/Crab/caxanga.png';
                     Navigator.pushNamed(context, 'Home');
                   });
                 },
@@ -72,6 +80,8 @@ class _ThemeScreenState extends State<ThemeScreen> {
                   save('colorText', 0xFF9CC3D5);
                   save('colorLogo', 0xFF187CE6);
                   save('colorCircle', 0xFF242D3F);
+                  saves('colorImg', 'assets/Icons/Header/capibaribe.png');
+                  saves('colorImgC', 'assets/Icons/Crab/capibaribe.png');
                   setState(() {
                     backgroundDown = Color(0xFF00316E);
                     backgroundMid = Color(0xFF00316E);
@@ -79,6 +89,8 @@ class _ThemeScreenState extends State<ThemeScreen> {
                     textColor = Color(0xFFCCFFCC);
                     logoColor = Color(0xFF0099CC);
                     circleBackground = Color(0xFF001B3A);
+                    img = 'assets/Icons/Header/capibaribe.png';
+                    crab = 'assets/Icons/Crab/capibaribe.png';
                     Navigator.pushNamed(context, 'Home');
                   });
                 },
@@ -93,6 +105,8 @@ class _ThemeScreenState extends State<ThemeScreen> {
                   save('colorText', 0xFF000000);
                   save('colorLogo', 0xFFF650A0);
                   save('colorCircle', 0xFFFFFFFF);
+                  saves('colorImg', 'assets/Icons/Header/mauritsstad.png');
+                  saves('colorImgC', 'assets/Icons/Crab/mauritsstad.png');
                   setState(() {
                     backgroundDown = Color(0xFFCAB7A1);
                     backgroundMid = Color(0xFFCAB7A1);
@@ -100,6 +114,8 @@ class _ThemeScreenState extends State<ThemeScreen> {
                     textColor = Color(0xFF260101);
                     logoColor = Color(0xFF881D1D);
                     circleBackground = Color(0xFF260101);
+                    img = 'assets/Icons/Header/mauritsstad.png';
+                    crab = 'assets/Icons/Crab/mauritsstad.png';
                     Navigator.pushNamed(context, 'Home');
                   });
                 },
@@ -114,13 +130,17 @@ class _ThemeScreenState extends State<ThemeScreen> {
                   save('colorText', 0xFF000000);
                   save('colorLogo', 0xFFF650A0);
                   save('colorCircle', 0xFFFFFFFF);
+                  saves('colorImg', 'assets/Icons/Header/jaqueira.png');
+                  saves('colorImgC', 'assets/Icons/Crab/jaqueira.png');
                   setState(() {
                     backgroundDown = Color(0xFFE5E7E1);
                     backgroundMid = Color(0xFFE5E7E1);
                     backgroundUp = Color(0xFFFFBAD2);
                     textColor = Color(0xFF5C604D);
-                    logoColor = Color(0xFFF20056);
+                    logoColor = Color(0xFFFD5DA8);
                     circleBackground = Color(0xFF999999);
+                    img = 'assets/Icons/Header/jaqueira.png';
+                    crab = 'assets/Icons/Crab/jaqueira.png';
                     Navigator.pushNamed(context, 'Home');
                   });
                 },
@@ -143,6 +163,11 @@ class _ThemeScreenState extends State<ThemeScreen> {
   save(String chave, int cor) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setInt(chave, cor);
+  }
+
+  saves(String chave, String cor) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString(chave, cor);
   }
 
   Widget option(String name, Widget icon) {

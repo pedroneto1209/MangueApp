@@ -9,6 +9,8 @@ Color backgroundUp = Color(0xFF000000);
 Color textColor = Color(0xFFFFFFFF);
 Color logoColor = Color(0xFF087234);
 Color circleBackground = Color(0xFF666666);
+String img = 'assets/Icons/Header/manguebeat.png';
+String crab = 'assets/Icons/Crab/manguebeat.png';
 
 class InitScreen extends StatefulWidget {
   @override
@@ -34,6 +36,8 @@ class _InitScreenState extends State<InitScreen> {
       read('colorText').then((value) {textColor = Color(value);});
       read('colorLogo').then((value) {logoColor = Color(value);});
       read('colorCircle').then((value) {circleBackground = Color(value);});
+      reads('colorImg').then((value) {img = value;});
+      reads('colorImgC').then((value) {crab = value;});
     }
 
     //checks bluetooth current state
@@ -76,6 +80,12 @@ class _InitScreenState extends State<InitScreen> {
   Future<int> read(String cor) async {
     final prefs = await SharedPreferences.getInstance();
     final value = prefs.getInt(cor);
+    return value;
+  }
+
+  Future<String> reads(String cor) async {
+    final prefs = await SharedPreferences.getInstance();
+    final value = prefs.getString(cor);
     return value;
   }
 
@@ -140,7 +150,7 @@ class _InitScreenState extends State<InitScreen> {
                     ),
                   Positioned(
                     bottom: 50,
-                    child: Image.asset('assets/images/HeaderLogo.png', width: 134),
+                    child: Image.asset(img, width: 134),
                   ),
                   Text(
                     'mangue',
@@ -226,14 +236,14 @@ class _InitScreenState extends State<InitScreen> {
     List<Widget> result = [];
     for (String s in list) {
       result.add(
-        option(s)
+        option(s, Icon(Icons.bluetooth, color: logoColor))
       );
     }
     return result;
   }
 
 
-  Widget option(String name) {
+  Widget option(String name, Widget icon) {
     return Stack(
       alignment: AlignmentDirectional.bottomCenter,
       children: <Widget>[
@@ -256,12 +266,12 @@ class _InitScreenState extends State<InitScreen> {
         Container(
           height: 2,
           width: 330,
-          color: backgroundUp
+          color: textColor
         ),
         Positioned(
-          bottom: 20,
+          bottom: 18,
           left: 33,
-          child: Image.asset('assets/images/bluetooth.png', width: 20),
+          child: icon
         ),
       ],
     );

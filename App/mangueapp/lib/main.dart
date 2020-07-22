@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
         'Init': (context) => InitScreen(),
         'Home': (context) => HomeScreen(),
         'DataBase': (context) => DataBasePage(),
-        'Theme': (context) => ThemeScreen(),
+        'Theme': (context) => ThemeScreen()
       },
       home: InitScreen()
     );
