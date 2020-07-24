@@ -33,7 +33,7 @@ class _DataBasePageState extends State<DataBasePage> {
                     ),
                   Positioned(
                     bottom: 50,
-                    child: Image.asset('assets/images/HeaderLogo.png', width: 134),
+                    child: Image.asset('assets/Icons/Header/jaqueira.png', width: 134),
                   ),
                   Text(
                     'mangue',

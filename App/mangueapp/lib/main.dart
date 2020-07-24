@@ -8,6 +8,8 @@ import "dart:math";
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mangueapp/bloc/blocs/user_bloc_provider.dart';
 import 'package:mangueapp/init.dart';
+import 'dart:convert';
+import 'package:flutter_blue/flutter_blue.dart';
 void main() {
   runApp(MyApp());
 }
@@ -40,16 +42,6 @@ class _HomeScreenState extends State<HomeScreen> {
   TextEditingController usernameText = new TextEditingController();
   TextEditingController passwordText = new TextEditingController();
 
-  //this part is to test
-  var vellist = [23, 24 ,25, 26];
-  var rotlist = [2000, 2200 , 2400, 2600];
-  var presslist = [2.8, 0.5 , 3.0, 0.3];
-  var acclist = [-0.42, -0.2 , 0.8, 1.01];
-  var tempolist = [92, 93];
-  var tempclist = [143, 142];
-  final _random = new Random();
-  //end of test
-
   //map requirements
   GoogleMapController mapController;
   void _onMapCreated(GoogleMapController controller) {
@@ -77,7 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
             backgroundColor: Colors.transparent,
             body: TabBarView(
               physics: NeverScrollableScrollPhysics(),
-              children: getPages(),
+              children: !isready ? getPages() : getPagesNew(),
             ),
             bottomNavigationBar: Container(
               height: 65,
@@ -87,21 +79,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   Tab(
                     icon: Icon(IconData(0xe902, fontFamily: 'Map'), size: 30)
                   ),
-                  GestureDetector(
-                  onTap: () {
-                  setState((){
-                    this.vel = vellist[_random.nextInt(vellist.length)];
-                    this.rot = rotlist[_random.nextInt(rotlist.length)];
-                    this.press = presslist[_random.nextInt(presslist.length)];
-                    this.acc = acclist[_random.nextInt(acclist.length)];
-                    this.tempo = tempolist[_random.nextInt(tempolist.length)];
-                    this.tempc = tempclist[_random.nextInt(tempclist.length)];
-                  }
-                  );
-                  },
-                  child: Tab(
+                  Tab(
                     icon: Icon(IconData(0xe901, fontFamily: 'Live'), size: 30)
-                  )
                   ),
                   Tab(
                     icon: Icon(IconData(0xe903, fontFamily: 'Server'), size: 30)
@@ -132,9 +111,136 @@ class _HomeScreenState extends State<HomeScreen> {
                 colors: [backgroundUp, backgroundMid, backgroundDown],
             ),
           ),
+        )
+      )
+    );
+  }
+
+  List<Widget> getPagesNew () {
+    return [
+      Stack(
+        alignment: AlignmentDirectional.bottomStart,
+        children: <Widget> [
+          Container(
+            child: GoogleMap(
+              onMapCreated: _onMapCreated,
+              initialCameraPosition: CameraPosition(
+                target: LatLng(lat, long),
+                zoom: 11.0,
+              ),
+            ),
+          ),
+          Stack(
+            alignment: AlignmentDirectional.center,
+            children: <Widget>[
+              Container(
+                height: 42,
+                width: 226,
+                color: Colors.transparent,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: backgroundDown,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(10),
+                      topRight: Radius.circular(10),
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.5),
+                        spreadRadius: 5,
+                        blurRadius: 7,
+                        offset: Offset(0, 3), // changes position of shadow
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Text(
+                'Última velocidade máx.: 49 Km/h',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'HP',
+                  fontSize: 15,
+                  color: logoColor
+                ),
+              ),
+            ],
+          ),
+        ]
+      ),
+      StreamBuilder<List<int>>(
+        stream: listStream,
+        initialData: [],
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.active) {
+            var curValue = _dataParser(snapshot.data);
+            return Container(
+              child: GridView.count(
+                physics: NeverScrollableScrollPhysics(),
+                crossAxisCount: 2,
+                children: <Widget>[
+                  liveitem('Velocidade', (curValue*3 + 30).toString(), (curValue*3 + 30)/60, 'Km/h'),
+                  liveitem('Rotação', (curValue*100 + 3000).toString(), (curValue*100 + 3000)/4000, 'RPM'),
+                  liveitem('Pressão do freio', (curValue*4 + 6).toString(), (curValue*4 + 6)/11, 'Mpa'),
+                  liveitem('Acelerações', (curValue + 1.5).toString(), (curValue + 1.5)/4, 'g'),
+                  liveitem('Temp. do óleo', (curValue + 82).toString(), (curValue + 82)/180, '°C'),
+                  liveitem('Temp. da CVT', (curValue*2 + 176).toString(), (curValue*2 + 176)/350, '°C'),
+                ],
+              ),
+            );
+          } else {
+            return SizedBox();
+          }
+        }
+      ),
+      FutureBuilder(
+        future: signinUser(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          String apiKey = '';
+          if (snapshot.hasData){
+            apiKey = snapshot.data;
+          } else{
+          }
+
+          return apiKey.length > 0 ? databasewidget() : LoginPage(login: login, newUser: false);
+        },
+      ),
+      Container(
+        child: MediaQuery.removePadding(
+          context: context,
+          removeTop: true,
+          child: ListView(
+            children: <Widget> [
+              Container(
+                height: 20,
+              ),
+              GestureDetector(
+                child: Container(color: Colors.transparent, child: option('Tema', Icon(Icons.format_paint, color: logoColor))
+                ),
+                onTap: () {
+                  Navigator.pushNamed(context, 'Theme');
+                },
+              ),
+              GestureDetector(
+                child: Container(color: Colors.transparent, child: option('Conectar ao bluetooth', Icon(Icons.bluetooth, color: logoColor))),
+                onTap: () {
+                  if (isconn) {
+                    disconnectToDevice(devv);
+                  }
+                  Navigator.pushNamed(context, 'Init');
+                }
+              ),
+              GestureDetector(
+                child: Container(color: Colors.transparent, child: option('Logout', Icon(Icons.exit_to_app, color: logoColor))),
+                onTap: () {
+                  logout();
+                }
+              ),
+            ],
+          ),
         ),
       ),
-    );
+    ];
   }
 
   List<Widget> getPages () {
@@ -202,7 +308,7 @@ class _HomeScreenState extends State<HomeScreen> {
             liveitem('Temp. da CVT', this.tempc.toString(), this.tempc/350, '°C'),
           ],
         ),
-      ),     
+      ),
       FutureBuilder(
         future: signinUser(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
@@ -234,6 +340,9 @@ class _HomeScreenState extends State<HomeScreen> {
               GestureDetector(
                 child: Container(color: Colors.transparent, child: option('Conectar ao bluetooth', Icon(Icons.bluetooth, color: logoColor))),
                 onTap: () {
+                  if (isconn) {
+                    disconnectToDevice(devv);
+                  }
                   Navigator.pushNamed(context, 'Init');
                 }
               ),
@@ -248,6 +357,16 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     ];
+  }
+
+  disconnectToDevice(BluetoothDevice device) async {
+    await device.disconnect();
+    isconn = false;
+  }
+
+  double _dataParser(List<int> dat) {
+    String s = utf8.decode(dat);
+    return double.parse(s);
   }
 
   Widget databasewidget(){
@@ -355,7 +474,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (apiKey.length > 0) {
       userBloc.signinUser("", "", apiKey);
     } else {
-      print("No api key");
+      //print("No api key");
     }
     return apiKey;
   }

@@ -74,12 +74,12 @@ class _ThemeScreenState extends State<ThemeScreen> {
                 child: Container(color: Colors.transparent, child: option('Capibaribe', Icon(Icons.style, color: logoColor))
                 ),
                 onTap: () {
-                  save('colorBackD', 0xFF00004D);
-                  save('colorBackM', 0xFF000050);
-                  save('colorBackU', 0xFF000033);
-                  save('colorText', 0xFF9CC3D5);
-                  save('colorLogo', 0xFF187CE6);
-                  save('colorCircle', 0xFF242D3F);
+                  save('colorBackD', 0xFF00316E);
+                  save('colorBackM', 0xFF00316E);
+                  save('colorBackU', 0xFF001B3A);
+                  save('colorText', 0xFFCCFFCC);
+                  save('colorLogo', 0xFF0099CC);
+                  save('colorCircle', 0xFF001B3A);
                   saves('colorImg', 'assets/Icons/Header/capibaribe.png');
                   saves('colorImgC', 'assets/Icons/Crab/capibaribe.png');
                   setState(() {
@@ -99,12 +99,12 @@ class _ThemeScreenState extends State<ThemeScreen> {
                 child: Container(color: Colors.transparent, child: option('Mauritsstad', Icon(Icons.style, color: logoColor))
                 ),
                 onTap: () {
-                  save('colorBackD', 0xFFFFCDA5);
-                  save('colorBackM', 0xFFFFCDA5);
-                  save('colorBackU', 0xFFEE4D5F);
-                  save('colorText', 0xFF000000);
-                  save('colorLogo', 0xFFF650A0);
-                  save('colorCircle', 0xFFFFFFFF);
+                  save('colorBackD', 0xFFCAB7A1);
+                  save('colorBackM', 0xFFCAB7A1);
+                  save('colorBackU', 0xFFB29576);
+                  save('colorText', 0xFF260101);
+                  save('colorLogo', 0xFF881D1D);
+                  save('colorCircle', 0xFF260101);
                   saves('colorImg', 'assets/Icons/Header/mauritsstad.png');
                   saves('colorImgC', 'assets/Icons/Crab/mauritsstad.png');
                   setState(() {
@@ -124,12 +124,12 @@ class _ThemeScreenState extends State<ThemeScreen> {
                 child: Container(color: Colors.transparent, child: option('Jaqueira', Icon(Icons.style, color: logoColor))
                 ),
                 onTap: () {
-                  save('colorBackD', 0xFFFFCDA5);
-                  save('colorBackM', 0xFFFFCDA5);
-                  save('colorBackU', 0xFFEE4D5F);
-                  save('colorText', 0xFF000000);
-                  save('colorLogo', 0xFFF650A0);
-                  save('colorCircle', 0xFFFFFFFF);
+                  save('colorBackD', 0xFFE5E7E1);
+                  save('colorBackM', 0xFFE5E7E1);
+                  save('colorBackU', 0xFFFFBAD2);
+                  save('colorText', 0xFF5C604D);
+                  save('colorLogo', 0xFFFD5DA8);
+                  save('colorCircle', 0xFF999999);
                   saves('colorImg', 'assets/Icons/Header/jaqueira.png');
                   saves('colorImgC', 'assets/Icons/Crab/jaqueira.png');
                   setState(() {

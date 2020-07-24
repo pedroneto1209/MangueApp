@@ -11,6 +11,11 @@ Color logoColor = Color(0xFF087234);
 Color circleBackground = Color(0xFF666666);
 String img = 'assets/Icons/Header/manguebeat.png';
 String crab = 'assets/Icons/Crab/manguebeat.png';
+StreamController<List<int>> cont = StreamController<List<int>>.broadcast();
+Stream listStream = cont.stream;
+bool isready;
+bool isconn = false;
+BluetoothDevice devv;
 
 class InitScreen extends StatefulWidget {
   @override
@@ -91,7 +96,6 @@ class _InitScreenState extends State<InitScreen> {
 
   void scanForDevices() async {
     List<BluetoothDevice> devices = [];
-    List<String> devicesname = [];
 
     scanSubscription = bluetoothInstance.scan().listen((scanResult) async {
       if (!devices.contains(scanResult.device)) {
@@ -101,17 +105,7 @@ class _InitScreenState extends State<InitScreen> {
       Future.delayed(const Duration(milliseconds: 4000), () {
         stopScanning();
 
-        devicesname = [];
-
-        for (BluetoothDevice d in devices) {
-          if (d.name == '') {
-            devicesname.add(d.id.toString());
-          } else {
-            devicesname.add(d.name);
-          }
-        }
-
-        List<Widget> c = fill(devicesname);
+        List<Widget> c = fill(devices);
         setState(() {
           cont = c;
         });
@@ -201,6 +195,7 @@ class _InitScreenState extends State<InitScreen> {
             //Link pro home
             GestureDetector(
               onTap: () {
+                isready = false;
                 Navigator.pushNamed(context, 'Home');
               },
               child: Padding(
@@ -232,9 +227,9 @@ class _InitScreenState extends State<InitScreen> {
     );
   }
 
-  List<Widget> fill(List<String> list) {
+  List<Widget> fill(List<BluetoothDevice> list) {
     List<Widget> result = [];
-    for (String s in list) {
+    for (BluetoothDevice s in list) {
       result.add(
         option(s, Icon(Icons.bluetooth, color: logoColor))
       );
@@ -242,38 +237,66 @@ class _InitScreenState extends State<InitScreen> {
     return result;
   }
 
+  Future connectToDevice(BluetoothDevice device) async {
+    await device.connect();
+    isconn = true;
+  }
 
-  Widget option(String name, Widget icon) {
-    return Stack(
-      alignment: AlignmentDirectional.bottomCenter,
-      children: <Widget>[
-        Container(
-          height: 60,
-        ),
-        Positioned(
-          bottom: 20,
-          left: 60,
-          child: Text(
-            name,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontFamily: 'HP',
-              fontSize: 15,
+  Future discoverServices(BluetoothDevice device) async {
+    List<BluetoothService> services = await device.discoverServices();
+    services.forEach((service) {
+      service.characteristics.forEach((characteristic) {
+        listStream = characteristic.value.asBroadcastStream();
+        characteristic.setNotifyValue(!characteristic.isNotifying);
+        isready = true;
+      });
+    });
+  }
+
+  Widget option(BluetoothDevice device, Widget icon) {
+    return GestureDetector(
+      onTap: () {
+        devv = device;
+        connectToDevice(device).then((_) {
+          discoverServices(device).then((_) {
+            Navigator.pushNamed(context, 'Home');
+          });
+        });
+      },
+      child: Container(
+        color: Colors.transparent,
+        child: Stack(
+          alignment: AlignmentDirectional.bottomCenter,
+          children: <Widget>[
+            Container(
+              height: 60,
+            ),
+            Positioned(
+              bottom: 20,
+              left: 60,
+              child: Text(
+                device.name,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'HP',
+                  fontSize: 15,
+                  color: textColor
+                ),
+              ),
+            ),
+            Container(
+              height: 2,
+              width: 330,
               color: textColor
             ),
-          ),
+            Positioned(
+              bottom: 18,
+              left: 33,
+              child: icon
+            ),
+          ],
         ),
-        Container(
-          height: 2,
-          width: 330,
-          color: textColor
-        ),
-        Positioned(
-          bottom: 18,
-          left: 33,
-          child: icon
-        ),
-      ],
+      ),
     );
   }
 }
