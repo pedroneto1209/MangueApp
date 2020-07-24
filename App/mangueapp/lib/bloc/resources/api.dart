@@ -10,7 +10,7 @@ class ApiProvider {
 
   Future signinUser(String username, String password, String apiKey) async {
     final response = await client
-        .post("http://15f981ab870e.ngrok.io/api/signin",
+        .post("http://15f90e01e2de.ngrok.io/api/signin",
         headers: {
           "Authorization": apiKey
         },
@@ -31,7 +31,7 @@ class ApiProvider {
 
   Future<User> registerUser(String username, String firstname, String lastname, String password, String email) async {
     final response = await client
-        .post("http://15f981ab870e.ngrok.io/api/register",
+        .post("http://15f90e01e2de.ngrok.io/api/register",
         body: jsonEncode({
           "email": email,
           "username": username,
@@ -53,7 +53,7 @@ class ApiProvider {
 
   Future<List<Graph>> getGraphs(String apiKey) async {
     final response = await client
-        .get("http://15f981ab870e.ngrok.io/api/graphs",
+        .get("http://15f90e01e2de.ngrok.io/api/graphs",
         headers: {
           'Authorization' : apiKey
         }

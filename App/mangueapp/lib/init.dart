@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:mangueapp/main.dart';
 
 Color backgroundDown = Color(0xFF101820);
 Color backgroundMid = Color(0xFF090D11);
@@ -196,7 +197,7 @@ class _InitScreenState extends State<InitScreen> {
             GestureDetector(
               onTap: () {
                 isready = false;
-                Navigator.pushNamed(context, 'Home');
+                Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
               },
               child: Padding(
                 padding: EdgeInsets.fromLTRB(0, 42, 0, 0),
@@ -259,7 +260,7 @@ class _InitScreenState extends State<InitScreen> {
         devv = device;
         connectToDevice(device).then((_) {
           discoverServices(device).then((_) {
-            Navigator.pushNamed(context, 'Home');
+            Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
           });
         });
       },

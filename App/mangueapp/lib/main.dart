@@ -4,7 +4,6 @@ import 'package:mangueapp/models/UI/loginscreen.dart';
 import 'package:mangueapp/models/UI/theme.dart';
 import 'models/UI/circle.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import "dart:math";
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:mangueapp/bloc/blocs/user_bloc_provider.dart';
 import 'package:mangueapp/init.dart';
@@ -36,11 +35,10 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int vel = 0, rot = 0, tempo = 0, tempc = 0;
-  double acc = 0.0, press = 0.0;
+  TextEditingController usernameText = TextEditingController();
+  TextEditingController passwordText = TextEditingController();
 
-  TextEditingController usernameText = new TextEditingController();
-  TextEditingController passwordText = new TextEditingController();
+  List<double> pckg = [];
 
   //map requirements
   GoogleMapController mapController;
@@ -49,8 +47,8 @@ class _HomeScreenState extends State<HomeScreen> {
     _setMapStyle();
   }
 
-  double lat = 45.521563;
-  double long = -122.677433;
+  double lat = -8.05428;
+  double long = -34.8813;
 
   void _setMapStyle() async {
     String style = await DefaultAssetBundle.of(context).loadString('assets/map_style.json');
@@ -65,44 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
         initialIndex: 2,
         length: 4,
         child:Container(
-          child: Scaffold(
-            backgroundColor: Colors.transparent,
-            body: TabBarView(
-              physics: NeverScrollableScrollPhysics(),
-              children: !isready ? getPages() : getPagesNew(),
-            ),
-            bottomNavigationBar: Container(
-              height: 65,
-              color: backgroundUp,
-              child: TabBar(
-                tabs: [
-                  Tab(
-                    icon: Icon(IconData(0xe902, fontFamily: 'Map'), size: 30)
-                  ),
-                  Tab(
-                    icon: Icon(IconData(0xe901, fontFamily: 'Live'), size: 30)
-                  ),
-                  Tab(
-                    icon: Icon(IconData(0xe903, fontFamily: 'Server'), size: 30)
-                  ),
-                  Tab(
-                    icon: Icon(Icons.settings, size: 30)
-                  )
-                ],
-                labelColor: logoColor,
-                unselectedLabelColor: textColor,
-                indicatorSize: TabBarIndicatorSize.tab,
-                indicator: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(10),
-                    bottomRight: Radius.circular(10),
-                  ),
-                  color: backgroundDown,
-                )
-              ),
-            ),
-          ),
-          //set gradient background
+          child: !isready ? getPages() : getPagesNew(),
           decoration: new BoxDecoration(
             gradient: new LinearGradient(
                 begin: FractionalOffset.topCenter,
@@ -116,247 +77,327 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  List<Widget> getPagesNew () {
-    return [
-      Stack(
-        alignment: AlignmentDirectional.bottomStart,
-        children: <Widget> [
-          Container(
-            child: GoogleMap(
-              onMapCreated: _onMapCreated,
-              initialCameraPosition: CameraPosition(
-                target: LatLng(lat, long),
-                zoom: 11.0,
+  Widget getPagesNew () {
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: TabBarView(
+        physics: NeverScrollableScrollPhysics(),
+        children:[
+        Stack(
+          alignment: AlignmentDirectional.bottomStart,
+          children: <Widget> [
+            Container(
+              child: GoogleMap(
+                onMapCreated: _onMapCreated,
+                initialCameraPosition: CameraPosition(
+                  target: LatLng(lat, long),
+                  zoom: 11.0,
+                ),
               ),
             ),
-          ),
-          Stack(
-            alignment: AlignmentDirectional.center,
-            children: <Widget>[
-              Container(
-                height: 42,
-                width: 226,
-                color: Colors.transparent,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: backgroundDown,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      topRight: Radius.circular(10),
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.5),
-                        spreadRadius: 5,
-                        blurRadius: 7,
-                        offset: Offset(0, 3), // changes position of shadow
+            Stack(
+              alignment: AlignmentDirectional.center,
+              children: <Widget>[
+                Container(
+                  height: 42,
+                  width: 226,
+                  color: Colors.transparent,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: backgroundDown,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(10),
+                        topRight: Radius.circular(10),
                       ),
-                    ],
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.5),
+                          spreadRadius: 5,
+                          blurRadius: 7,
+                          offset: Offset(0, 3), // changes position of shadow
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              Text(
-                'Última velocidade máx.: 49 Km/h',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'HP',
-                  fontSize: 15,
-                  color: logoColor
+                Text(
+                  'Última velocidade máx.: 49 Km/h',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: 'HP',
+                    fontSize: 15,
+                    color: logoColor
+                  ),
                 ),
-              ),
-            ],
-          ),
-        ]
-      ),
-      StreamBuilder<List<int>>(
-        stream: listStream,
-        initialData: [],
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.active) {
-            var curValue = _dataParser(snapshot.data);
-            return Container(
-              child: GridView.count(
-                physics: NeverScrollableScrollPhysics(),
-                crossAxisCount: 2,
-                children: <Widget>[
-                  liveitem('Velocidade', (curValue*3 + 30).toString(), (curValue*3 + 30)/60, 'Km/h'),
-                  liveitem('Rotação', (curValue*100 + 3000).toString(), (curValue*100 + 3000)/4000, 'RPM'),
-                  liveitem('Pressão do freio', (curValue*4 + 6).toString(), (curValue*4 + 6)/11, 'Mpa'),
-                  liveitem('Acelerações', (curValue + 1.5).toString(), (curValue + 1.5)/4, 'g'),
-                  liveitem('Temp. do óleo', (curValue + 82).toString(), (curValue + 82)/180, '°C'),
-                  liveitem('Temp. da CVT', (curValue*2 + 176).toString(), (curValue*2 + 176)/350, '°C'),
-                ],
-              ),
-            );
-          } else {
-            return SizedBox();
-          }
-        }
-      ),
-      FutureBuilder(
-        future: signinUser(),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          String apiKey = '';
-          if (snapshot.hasData){
-            apiKey = snapshot.data;
-          } else{
-          }
+              ],
+            ),
+          ]
+        ),
+        StreamBuilder<List<int>>(
+          stream: listStream,
+          initialData: [],
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.active) {
+              var curValue = _dataParser(snapshot.data);
+              var curTime = _timeParser(snapshot.data);
 
-          return apiKey.length > 0 ? databasewidget() : LoginPage(login: login, newUser: false);
-        },
-      ),
-      Container(
-        child: MediaQuery.removePadding(
-          context: context,
-          removeTop: true,
-          child: ListView(
-            children: <Widget> [
-              Container(
-                height: 20,
-              ),
-              GestureDetector(
-                child: Container(color: Colors.transparent, child: option('Tema', Icon(Icons.format_paint, color: logoColor))
+              pckg.add(curValue);
+
+              if (curTime % 30 == 0) {
+                print('trinta');
+                pckg = [];
+              }
+
+              return Container(
+                child: GridView.count(
+                  physics: NeverScrollableScrollPhysics(),
+                  crossAxisCount: 2,
+                  children: <Widget>[
+                    liveitem('Velocidade', (curValue*3 + 30).toString(), (curValue*3 + 30)/60, 'Km/h'),
+                    liveitem('Rotação', (curValue*100 + 3000).toString(), (curValue*100 + 3000)/4000, 'RPM'),
+                    liveitem('Pressão do freio', (curValue*4 + 6).toString(), (curValue*4 + 6)/11, 'Mpa'),
+                    liveitem('Acelerações', (curValue + 1.5).toString(), (curValue + 1.5)/4, 'g'),
+                    liveitem('Temp. do óleo', (curValue + 82).toString(), (curValue + 82)/180, '°C'),
+                    liveitem('Temp. da CVT', (curValue*2 + 176).toString(), (curValue*2 + 176)/350, '°C'),
+                  ],
                 ),
-                onTap: () {
-                  Navigator.pushNamed(context, 'Theme');
-                },
-              ),
-              GestureDetector(
-                child: Container(color: Colors.transparent, child: option('Conectar ao bluetooth', Icon(Icons.bluetooth, color: logoColor))),
-                onTap: () {
-                  if (isconn) {
-                    disconnectToDevice(devv);
+              );
+            } else {
+              return SizedBox();
+            }
+          }
+        ),
+        FutureBuilder(
+          future: signinUser(),
+          builder: (BuildContext context, AsyncSnapshot snapshot) {
+            String apiKey = '';
+            if (snapshot.hasData){
+              apiKey = snapshot.data;
+            } else{
+            }
+            return apiKey.length > 0 ? databasewidget() : LoginPage(login: login, newUser: false);
+            },
+          ),
+        Container(
+          child: MediaQuery.removePadding(
+            context: context,
+            removeTop: true,
+            child: ListView(
+              children: <Widget> [
+                Container(
+                  height: 20,
+                ),
+                GestureDetector(
+                  child: Container(color: Colors.transparent, child: option('Tema', Icon(Icons.format_paint, color: logoColor))
+                  ),
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => ThemeScreen()));
+                  },
+                ),
+                GestureDetector(
+                  child: Container(color: Colors.transparent, child: option('Conectar ao bluetooth', Icon(Icons.bluetooth, color: logoColor))),
+                  onTap: () {
+                    if (isconn) {
+                      disconnectToDevice(devv);
+                    }
+                    Navigator.pushNamed(context, 'Init');
                   }
-                  Navigator.pushNamed(context, 'Init');
-                }
-              ),
-              GestureDetector(
-                child: Container(color: Colors.transparent, child: option('Logout', Icon(Icons.exit_to_app, color: logoColor))),
-                onTap: () {
-                  logout();
-                }
-              ),
-            ],
+                ),
+                GestureDetector(
+                  child: Container(color: Colors.transparent, child: option('Logout', Icon(Icons.exit_to_app, color: logoColor))),
+                  onTap: () {
+                    logout();
+                  }
+                ),
+              ],
+            ),
           ),
         ),
+        ]
       ),
-    ];
+      bottomNavigationBar: Container(
+        height: 65,
+        color: backgroundUp,
+        child: TabBar(
+          tabs: [
+            Tab(
+              icon: Icon(IconData(0xe902, fontFamily: 'Map'), size: 30)
+            ),
+            Tab(
+              icon: Icon(IconData(0xe901, fontFamily: 'Live'), size: 30)
+            ),
+            Tab(
+              icon: Icon(IconData(0xe903, fontFamily: 'Server'), size: 30)
+            ),
+            Tab(
+              icon: Icon(Icons.settings, size: 30)
+            )
+          ],
+          labelColor: logoColor,
+          unselectedLabelColor: textColor,
+          indicatorSize: TabBarIndicatorSize.tab,
+          indicator: BoxDecoration(
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(10),
+              bottomRight: Radius.circular(10),
+            ),
+            color: backgroundDown,
+          )
+        ),
+      ),
+    );
   }
 
-  List<Widget> getPages () {
-    return [
-      Stack(
-        alignment: AlignmentDirectional.bottomStart,
-        children: <Widget> [
-          Container(
-            child: GoogleMap(
-              onMapCreated: _onMapCreated,
-              initialCameraPosition: CameraPosition(
-                target: LatLng(lat, long),
-                zoom: 11.0,
-              ),
-            ),
-          ),
+  Widget getPages () {
+    return Scaffold(
+      backgroundColor: Colors.transparent,
+      body: TabBarView(
+        physics: NeverScrollableScrollPhysics(),
+        children: [
           Stack(
-            alignment: AlignmentDirectional.center,
-            children: <Widget>[
+            alignment: AlignmentDirectional.bottomStart,
+            children: <Widget> [
               Container(
-                height: 42,
-                width: 226,
-                color: Colors.transparent,
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: backgroundDown,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(10),
-                      topRight: Radius.circular(10),
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.5),
-                        spreadRadius: 5,
-                        blurRadius: 7,
-                        offset: Offset(0, 3), // changes position of shadow
-                      ),
-                    ],
+                child: GoogleMap(
+                  onMapCreated: _onMapCreated,
+                  initialCameraPosition: CameraPosition(
+                    target: LatLng(lat, long),
+                    zoom: 11.0,
                   ),
                 ),
               ),
-              Text(
-                'Última velocidade máx.: 49 Km/h',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'HP',
-                  fontSize: 15,
-                  color: logoColor
-                ),
+              Stack(
+                alignment: AlignmentDirectional.center,
+                children: <Widget>[
+                  Container(
+                    height: 42,
+                    width: 226,
+                    color: Colors.transparent,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: backgroundDown,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(10),
+                          topRight: Radius.circular(10),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.5),
+                            spreadRadius: 5,
+                            blurRadius: 7,
+                            offset: Offset(0, 3), // changes position of shadow
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Text(
+                    'Última velocidade máx.: 49 Km/h',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontFamily: 'HP',
+                      fontSize: 15,
+                      color: logoColor
+                    ),
+                  ),
+                ],
               ),
-            ],
+          ]
+        ),
+          Container(
+            child: GridView.count(
+              physics: NeverScrollableScrollPhysics(),
+              crossAxisCount: 2,
+              children: <Widget>[
+                liveitem('Velocidade', '0', 0.0, 'Km/h'),
+                liveitem('Rotação', '0', 0.0, 'RPM'),
+                liveitem('Pressão do freio', '0', 0.0, 'Mpa'),
+                liveitem('Acelerações', '0', 0.0, 'g'),
+                liveitem('Temp. do óleo', '0', 0.0, '°C'),
+                liveitem('Temp. da CVT', '0', 0.0, '°C'),
+              ],
+            ),
+          ),
+          FutureBuilder(
+            future: signinUser(),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              String apiKey = '';
+              if (snapshot.hasData){
+                apiKey = snapshot.data;
+              } else{
+              }
+
+              return apiKey.length > 0 ? databasewidget() : LoginPage(login: login, newUser: false);
+            },
+          ),
+          Container(
+            child: MediaQuery.removePadding(
+              context: context,
+              removeTop: true,
+              child: ListView(
+                children: <Widget> [
+                  Container(
+                    height: 20,
+                  ),
+                  GestureDetector(
+                    child: Container(color: Colors.transparent, child: option('Tema', Icon(Icons.format_paint, color: logoColor))
+                    ),
+                    onTap: () {
+                      Navigator.pushNamed(context, 'Theme');
+                    },
+                  ),
+                  GestureDetector(
+                    child: Container(color: Colors.transparent, child: option('Conectar ao bluetooth', Icon(Icons.bluetooth, color: logoColor))),
+                    onTap: () {
+                      if (isconn) {
+                        disconnectToDevice(devv);
+                      }
+                      Navigator.pushNamed(context, 'Init');
+                    }
+                  ),
+                  GestureDetector(
+                    child: Container(color: Colors.transparent, child: option('Logout', Icon(Icons.exit_to_app, color: logoColor))),
+                    onTap: () {
+                      logout();
+                    }
+                  ),
+                ],
+              ),
+            ),
           ),
         ]
       ),
-      Container(
-        child: GridView.count(
-          physics: NeverScrollableScrollPhysics(),
-          crossAxisCount: 2,
-          children: <Widget>[
-            liveitem('Velocidade', this.vel.toString(), this.vel/60, 'Km/h'),
-            liveitem('Rotação', this.rot.toString(), this.rot/4000, 'RPM'),
-            liveitem('Pressão do freio', this.press.toString(), this.press/11, 'Mpa'),
-            liveitem('Acelerações', this.acc.toString(), this.acc/4, 'g'),
-            liveitem('Temp. do óleo', this.tempo.toString(), this.tempo/180, '°C'),
-            liveitem('Temp. da CVT', this.tempc.toString(), this.tempc/350, '°C'),
+      bottomNavigationBar: Container(
+        height: 65,
+        color: backgroundUp,
+        child: TabBar(
+          tabs: [
+            Tab(
+              icon: Icon(IconData(0xe902, fontFamily: 'Map'), size: 30)
+            ),
+            Tab(
+              icon: Icon(IconData(0xe901, fontFamily: 'Live'), size: 30)
+            ),
+            Tab(
+              icon: Icon(IconData(0xe903, fontFamily: 'Server'), size: 30)
+            ),
+            Tab(
+              icon: Icon(Icons.settings, size: 30)
+            )
           ],
+          labelColor: logoColor,
+          unselectedLabelColor: textColor,
+          indicatorSize: TabBarIndicatorSize.tab,
+          indicator: BoxDecoration(
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(10),
+              bottomRight: Radius.circular(10),
+            ),
+            color: backgroundDown,
+          )
         ),
       ),
-      FutureBuilder(
-        future: signinUser(),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          String apiKey = '';
-          if (snapshot.hasData){
-            apiKey = snapshot.data;
-          } else{
-          }
-
-          return apiKey.length > 0 ? databasewidget() : LoginPage(login: login, newUser: false);
-        },
-      ),
-      Container(
-        child: MediaQuery.removePadding(
-          context: context,
-          removeTop: true,
-          child: ListView(
-            children: <Widget> [
-              Container(
-                height: 20,
-              ),
-              GestureDetector(
-                child: Container(color: Colors.transparent, child: option('Tema', Icon(Icons.format_paint, color: logoColor))
-                ),
-                onTap: () {
-                  Navigator.pushNamed(context, 'Theme');
-                },
-              ),
-              GestureDetector(
-                child: Container(color: Colors.transparent, child: option('Conectar ao bluetooth', Icon(Icons.bluetooth, color: logoColor))),
-                onTap: () {
-                  if (isconn) {
-                    disconnectToDevice(devv);
-                  }
-                  Navigator.pushNamed(context, 'Init');
-                }
-              ),
-              GestureDetector(
-                child: Container(color: Colors.transparent, child: option('Logout', Icon(Icons.exit_to_app, color: logoColor))),
-                onTap: () {
-                  logout();
-                }
-              ),
-            ],
-          ),
-        ),
-      ),
-    ];
+    );
   }
 
   disconnectToDevice(BluetoothDevice device) async {
@@ -366,6 +407,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
   double _dataParser(List<int> dat) {
     String s = utf8.decode(dat);
+    s = s.substring(0, s.indexOf(', '));
+    return double.parse(s);
+  }
+
+  double _timeParser(List<int> dat) {
+    String s = utf8.decode(dat);
+    s = s.substring(s.indexOf(', ') + 1);
     return double.parse(s);
   }
 

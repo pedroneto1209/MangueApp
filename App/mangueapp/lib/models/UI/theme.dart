@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mangueapp/init.dart';
+import 'package:mangueapp/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ThemeScreen extends StatefulWidget {
@@ -41,7 +42,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
                     circleBackground = Color(0xFF666666);
                     img = 'assets/Icons/Header/manguebeat.png';
                     crab = 'assets/Icons/Crab/manguebeat.png';
-                    Navigator.pushNamed(context, 'Home');
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
                   });
                 },
               ),
@@ -66,7 +67,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
                     circleBackground = Color(0xFF6F7C80);
                     img = 'assets/Icons/Header/caxanga.png';
                     crab = 'assets/Icons/Crab/caxanga.png';
-                    Navigator.pushNamed(context, 'Home');
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
                   });
                 },
               ),
@@ -91,7 +92,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
                     circleBackground = Color(0xFF001B3A);
                     img = 'assets/Icons/Header/capibaribe.png';
                     crab = 'assets/Icons/Crab/capibaribe.png';
-                    Navigator.pushNamed(context, 'Home');
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
                   });
                 },
               ),
@@ -116,7 +117,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
                     circleBackground = Color(0xFF260101);
                     img = 'assets/Icons/Header/mauritsstad.png';
                     crab = 'assets/Icons/Crab/mauritsstad.png';
-                    Navigator.pushNamed(context, 'Home');
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
                   });
                 },
               ),
@@ -141,7 +142,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
                     circleBackground = Color(0xFF999999);
                     img = 'assets/Icons/Header/jaqueira.png';
                     crab = 'assets/Icons/Crab/jaqueira.png';
-                    Navigator.pushNamed(context, 'Home');
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
                   });
                 },
               ),
