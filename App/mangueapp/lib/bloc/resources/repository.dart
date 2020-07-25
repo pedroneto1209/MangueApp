@@ -13,4 +13,8 @@ class Repository {
 
   Future getGraphs(String apiKey)
     => apiProvider.getGraphs(apiKey);
+
+  Future<Null> addUserGraph(String apiKey, String data, String date, String datatype) async {
+    apiProvider.addUserGraph(apiKey, data, date, datatype);
+  }
 }

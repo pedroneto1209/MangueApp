@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mangueapp/bloc/resources/repository.dart';
 import 'package:mangueapp/models/UI/database.dart';
 import 'package:mangueapp/models/UI/loginscreen.dart';
 import 'package:mangueapp/models/UI/theme.dart';
@@ -37,6 +38,10 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   TextEditingController usernameText = TextEditingController();
   TextEditingController passwordText = TextEditingController();
+
+  GraphBloc graphBloc;
+  Repository _repository = Repository();
+  String apiKey = '';
 
   List<double> pckg = [];
 
@@ -144,7 +149,10 @@ class _HomeScreenState extends State<HomeScreen> {
               pckg.add(curValue);
 
               if (curTime % 30 == 0) {
-                print('trinta');
+                print('sent');
+                String liststring = listString(pckg);
+                var now  = DateTime.now().toString();
+                addGraph(liststring, now, graphname);
                 pckg = [];
               }
 
@@ -170,9 +178,10 @@ class _HomeScreenState extends State<HomeScreen> {
         FutureBuilder(
           future: signinUser(),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
-            String apiKey = '';
+            
             if (snapshot.hasData){
               apiKey = snapshot.data;
+              graphBloc = GraphBloc();
             } else{
             }
             return apiKey.length > 0 ? databasewidget() : LoginPage(login: login, newUser: false);
@@ -246,6 +255,19 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  void addGraph (String data, String date, String datatype) async {
+    await _repository.addUserGraph(apiKey, data, date, datatype);
+    
+  }
+
+  String listString(List<double> list) {
+    String result = '';
+    for (double d in list) {
+      result += d.toString() + ', ';
+    }
+    return result;
   }
 
   Widget getPages () {

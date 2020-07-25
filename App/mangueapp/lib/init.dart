@@ -17,6 +17,7 @@ Stream listStream = cont.stream;
 bool isready;
 bool isconn = false;
 BluetoothDevice devv;
+String graphname;
 
 class InitScreen extends StatefulWidget {
   @override
@@ -254,13 +255,116 @@ class _InitScreenState extends State<InitScreen> {
     });
   }
 
+  void showDia(BuildContext context) {
+    showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.transparent,
+          content: Container(
+            color: Colors.transparent,
+            child: Container(
+              width: 340,
+              height: 150,
+              child: Column(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(15),
+                    child: Text(
+                      'Selecione o próximo teste',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'Ageo',
+                        fontSize: 16,
+                        color: textColor
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 0, 0, 15),
+                    child: Container(
+                      width: 180,
+                      height: 40,
+                      child: DropdownButtonFormField<String>(
+                        decoration: InputDecoration.collapsed(hintText: '',
+                        hoverColor: Colors.black),
+                        items: <String>['AV', 'SquidPad', 'AR', 'Freio'].map((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Padding(
+                              padding: EdgeInsets.fromLTRB(10, 0, 0, 10),
+                              child: Text(
+                                value,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontFamily: 'Ageo',
+                                  fontSize: 15,
+                                  color: Colors.black
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (String select) {
+                          graphname = select;
+                        },
+                      ),
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(10))
+                      ),
+                    ),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).pop(true);
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+                    },
+                    child: Container(
+                      height: 30,
+                      width: 60,
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+                        child: Text(
+                          'Ok!',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontFamily: 'Ageoextrabold',
+                            fontSize: 18,
+                            color: textColor
+                          )
+                        ),
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.transparent,
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                        border: Border.all(
+                          color: textColor,
+                          width: 1
+                        )
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              decoration: BoxDecoration(
+                  color: backgroundDown,
+                  borderRadius: BorderRadius.all(Radius.circular(10))
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   Widget option(BluetoothDevice device, Widget icon) {
     return GestureDetector(
       onTap: () {
         devv = device;
         connectToDevice(device).then((_) {
           discoverServices(device).then((_) {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+            showDia(context);
           });
         });
       },

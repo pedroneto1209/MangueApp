@@ -27,6 +27,7 @@ class UserBloc {
 class GraphBloc {
   final _repository = Repository();
   final _graphGetter = PublishSubject<List<Graph>>();
+  String apiKey;
 
   Stream<List<Graph>> get getGraphs => _graphGetter.stream;
 

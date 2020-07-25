@@ -72,6 +72,26 @@ class ApiProvider {
     }
   }
 
+  Future addUserGraph(String apiKey, String data, String date, String datatype) async {
+    final response = await client
+        .post("http://15f90e01e2de.ngrok.io/api/graphs",
+        headers: {
+          'Authorization' : apiKey
+        },
+        body: jsonEncode({
+          "date": date,
+          "typedata": datatype,
+          "data": data
+        })
+        );
+    if (response.statusCode == 201) {
+      print('graph added');
+    } else {
+      // If that call was not successful, throw an error.
+      throw Exception('Failed to load post');
+    }
+  }
+
   saveApiKey(String apiKey) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('APIToken', apiKey);
