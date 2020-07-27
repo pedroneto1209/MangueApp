@@ -359,6 +359,12 @@ class _InitScreenState extends State<InitScreen> {
   }
 
   Widget option(BluetoothDevice device, Widget icon) {
+    String nameopt;
+    if(device.name == ''){
+      nameopt = 'Dispositivo sem nome';
+    } else {
+      nameopt = device.name;
+    }
     return GestureDetector(
       onTap: () {
         devv = device;
@@ -380,7 +386,7 @@ class _InitScreenState extends State<InitScreen> {
               bottom: 20,
               left: 60,
               child: Text(
-                device.name,
+                nameopt,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontFamily: 'HP',

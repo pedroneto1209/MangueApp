@@ -3,3 +3,4 @@ Backend/env
 __pycache__
 .vscode
 Backend/config.py
+Backend/retrieve.py
