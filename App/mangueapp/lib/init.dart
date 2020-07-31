@@ -240,7 +240,7 @@ class _InitScreenState extends State<InitScreen> {
   }
 
   Future connectToDevice(BluetoothDevice device) async {
-    await device.connect();
+    await device.connect(autoConnect: false);
     isconn = true;
   }
 

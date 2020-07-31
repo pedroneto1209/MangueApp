@@ -1,3 +1,4 @@
+import 'package:bezier_chart/bezier_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:mangueapp/bloc/resources/repository.dart';
 import 'package:mangueapp/models/UI/database.dart';
@@ -45,11 +46,15 @@ class _HomeScreenState extends State<HomeScreen> {
   TextEditingController usernameText = TextEditingController();
   TextEditingController passwordText = TextEditingController();
 
+  bool graph = false;
+
   GraphBloc graphBloc;
   Repository _repository = Repository();
   String apiKey = '';
 
-  List<double> pckg = [];
+  int sup = 0;
+  List<double> pckg = List.filled(150, 0);
+  List<double> tim = [for(double i=0; i<150; i+=1) i];
 
   //map requirements
   GoogleMapController mapController;
@@ -111,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: <Widget>[
                 Container(
                   height: 42,
-                  width: 226,
+                  width: MediaQuery. of(context).size.width/4,
                   color: Colors.transparent,
                   child: Container(
                     decoration: BoxDecoration(
@@ -132,11 +137,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 Text(
-                  'Última velocidade máx.: 49 Km/h',
+                  '150.00 Km/h',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontFamily: 'HP',
-                    fontSize: 15,
+                    fontSize: 12,
                     color: logoColor
                   ),
                 ),
@@ -152,17 +157,20 @@ class _HomeScreenState extends State<HomeScreen> {
               var curValue = _dataParser(snapshot.data);
               var curTime = _timeParser(snapshot.data);
 
-              pckg.add(curValue);
+              pckg[sup] = curValue;
+              sup++;
 
-              if (curTime % 30 == 0) {
+              if (curTime % 15 == 0) {
                 print('sent');
                 String liststring = listString(pckg);
                 var now  = DateTime.now().toString();
                 addGraph(liststring, now, graphname);
-                pckg = [];
+                sup = 0;
+                pckg = List.filled(150, 0);
+                tim = [for(double i=0; i<150; i+=1) i];
               }
 
-              return Container(
+              return !graph ? Container(
                 child: GridView.count(
                   physics: NeverScrollableScrollPhysics(),
                   crossAxisCount: 2,
@@ -175,6 +183,51 @@ class _HomeScreenState extends State<HomeScreen> {
                     liveitem('Temp. da CVT', (curValue*2 + 176).toString(), (curValue*2 + 176)/350, '°C'),
                   ],
                 ),
+              ):
+              Stack(
+                alignment: Alignment.topLeft,
+                children: <Widget>[
+                  Container(color: Colors.transparent),
+                  Column(
+                    children: <Widget>[
+                      Container(height: 200,),
+                      Container(
+                        height: 200,
+                        child: BezierChart(
+                          bezierChartScale: BezierChartScale.CUSTOM,
+                          xAxisCustomValues: tim,
+                          series: [
+                            BezierLine(
+                              data: dataForGraph(pckg, tim),
+                            ),
+                          ],
+                          config: BezierChartConfig(
+                            showDataPoints: false,
+                            verticalIndicatorColor: logoColor,
+                            displayYAxis: true,
+                            xAxisTextStyle: TextStyle(
+                              color: Colors.transparent,
+                            )
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Positioned(
+                    child: GestureDetector(
+                      onTap: () {
+                        graph = false;
+                      },
+                      child: Icon(
+                        Icons.arrow_back_ios,
+                        size: 30,
+                        color: logoColor,
+                      ),
+                    ),
+                    top: 25,
+                    left: 10,
+                  ),
+                ],
               );
             } else {
               return SizedBox();
@@ -263,6 +316,14 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  List<DataPoint> dataForGraph (List<double> pckg, List<double> tim) {
+    List<DataPoint> a = [];
+    for (double v in pckg) {
+      a.add(DataPoint<double>(value: double.parse((v + 1).toStringAsFixed(2)), xAxis: tim[pckg.indexOf(v)]));
+    }
+    return a;
+  }
+
   void addGraph (String data, String date, String datatype) async {
     await _repository.addUserGraph(apiKey, data, date, datatype);
     
@@ -299,7 +360,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 children: <Widget>[
                   Container(
                     height: 42,
-                    width: 226,
+                    width: MediaQuery. of(context).size.width/4,
                     color: Colors.transparent,
                     child: Container(
                       decoration: BoxDecoration(
@@ -320,11 +381,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                   Text(
-                    'Última velocidade máx.: 49 Km/h',
+                    '150.00 Km/h',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontFamily: 'HP',
-                      fontSize: 15,
+                      fontSize: 12,
                       color: logoColor
                     ),
                   ),
@@ -561,69 +622,74 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget liveitem(String name, String valor, double percent, String unity) {
-    return Column(
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.fromLTRB(0, 10, 0, 5),
-          child: Container(
-            height: 4,
-            width: 150,
-            color: Colors.transparent,
+    return GestureDetector(
+      onTap: () {
+        graph = true;
+      },
+      child: Column(
+        children: <Widget>[
+          Padding(
+            padding: EdgeInsets.fromLTRB(0, 10, 0, 5),
             child: Container(
-                decoration: BoxDecoration(
-                  color: logoColor,
-                  borderRadius: BorderRadius.all(Radius.circular(10))
+              height: 4,
+              width: 150,
+              color: Colors.transparent,
+              child: Container(
+                  decoration: BoxDecoration(
+                    color: logoColor,
+                    borderRadius: BorderRadius.all(Radius.circular(10))
+                ),
               ),
             ),
           ),
-        ),
-        Text(
-          name,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontFamily: 'Ageoextrabold',
-            fontSize: 15,
-            color: logoColor
+          Text(
+            name,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'Ageoextrabold',
+              fontSize: 15,
+              color: logoColor
+            ),
           ),
-        ),
-        Padding(padding: EdgeInsets.fromLTRB(0, 9, 0, 0),
-          child: Stack(
-            alignment: AlignmentDirectional.center,
-            children: <Widget>[
-              Container(
-                width: 126,
-                child: CircleProgressBar(
-                  foregroundColor: logoColor,
-                  backgroundColor: circleBackground,
-                  value: percent
+          Padding(padding: EdgeInsets.fromLTRB(0, 9, 0, 0),
+            child: Stack(
+              alignment: AlignmentDirectional.center,
+              children: <Widget>[
+                Container(
+                  width: 110,
+                  child: CircleProgressBar(
+                    foregroundColor: logoColor,
+                    backgroundColor: circleBackground,
+                    value: percent
+                  ),
                 ),
-              ),
-              Text(
-                valor,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'HP',
-                  fontSize: 30,
-                  color: textColor
-                ),
-              ),
-              Positioned(child: Padding(
-                padding: const EdgeInsets.fromLTRB(0, 42, 0, 0),
-                child: Text(
-                  unity,
+                Text(
+                  valor,
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontFamily: 'HP',
-                    fontSize: 15,
+                    fontSize: 25,
                     color: textColor
+                  ),
+                ),
+                Positioned(child: Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 42, 0, 0),
+                  child: Text(
+                    unity,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontFamily: 'HP',
+                      fontSize: 15,
+                      color: textColor
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ]
+        ]
+      ),
     );
   }
 
