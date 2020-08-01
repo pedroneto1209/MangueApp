@@ -1,7 +1,6 @@
 import 'package:bezier_chart/bezier_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:mangueapp/bloc/resources/repository.dart';
-import 'package:mangueapp/models/UI/database.dart';
 import 'package:mangueapp/models/UI/loginscreen.dart';
 import 'package:mangueapp/models/UI/theme.dart';
 import 'models/UI/circle.dart';
@@ -31,7 +30,6 @@ class MyApp extends StatelessWidget {
       routes: {
         'Init': (context) => InitScreen(),
         'Home': (context) => HomeScreen(),
-        'DataBase': (context) => DataBasePage(),
         'Theme': (context) => ThemeScreen()
       },
       home: InitScreen()
@@ -48,10 +46,13 @@ class _HomeScreenState extends State<HomeScreen> {
   List<Graph> graphs;
   TextEditingController usernameText = TextEditingController();
   TextEditingController passwordText = TextEditingController();
-  TextEditingController search = TextEditingController();
+  String searchtype;
+  String searchpar;
+  List<double> graphdata;
 
   bool graph = false;
   bool searched = false;
+  bool tappedgraph = false;
   List<Widget> graphsarray = [];
 
   GraphBloc graphBloc;
@@ -61,6 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int sup = 0;
   List<double> pckg = List.filled(150, 0);
   List<double> tim = [for(double i=0; i<150; i+=1) i];
+  List<double> tim1 = [for(double i=0; i<150; i+=1) i];
 
   //map requirements
   GoogleMapController mapController;
@@ -419,12 +421,10 @@ class _HomeScreenState extends State<HomeScreen> {
           FutureBuilder(
             future: signinUser(),
             builder: (BuildContext context, AsyncSnapshot snapshot) {
-              String apiKey = '';
               if (snapshot.hasData){
                 apiKey = snapshot.data;
               } else{
               }
-
               return apiKey.length > 0 ? databasewidget() : LoginPage(login: login, newUser: false);
             },
           ),
@@ -522,72 +522,116 @@ class _HomeScreenState extends State<HomeScreen> {
         child: 
         Column(
           children: <Widget>[
-            Text(
-              'Pesquise os dados por data ou nome:',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontFamily: 'Ageo',
-                fontSize: 18,
-                color: logoColor
-              ),
-            ),
             Padding(
-              padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
-              child: Container(
-                height: 50,
-                width: 345,
-                color: Colors.transparent,
-                child: Stack(
-                  children: <Widget>[
-                  Container(
-                    child: Padding(
-                    padding: EdgeInsets.fromLTRB(38, 0, 10, 9),
-                    child: TextField(
-                      controller: search,
-                      style: TextStyle(
-                        fontFamily: 'Ageo',
-                        fontSize: 18,
-                        color: textColor
-                      ),
-                      maxLength: 28,
-                      decoration: InputDecoration(
-                        border: InputBorder.none,
-                        focusedBorder: InputBorder.none,
-                        enabledBorder: InputBorder.none,
-                        errorBorder: InputBorder.none,
-                        disabledBorder: InputBorder.none,
-                        counterText: '',
-                      ),
-                      onSubmitted: (value) {
-                        graphsarray = [];
-                        getGraph().then((_) {
-                          setState(() {
-                            for (Graph g in graphs) {
-                              if (value == g.typedata) {
-                                graphsarray.add(graphopt(g));
-                              }
-                            }
-                            searched = true;
-                          });
-                        });
-                      },
-                    ),
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.transparent,
-                      borderRadius: BorderRadius.all(Radius.circular(25)),
-                      border: Border.all(
-                        color: textColor,
-                        width: 2
-                      )
-                    ),
-                  ),
-                  Padding(padding: EdgeInsets.fromLTRB(10, 13, 0, 0),
-                  child: Icon(Icons.search, color: textColor)
-                  )
-                  ]
+              padding: EdgeInsets.fromLTRB(0, 0, 0, 20),
+              child: Text(
+                'Preencha os dados do gráfico:',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontFamily: 'Ageo',
+                  fontSize: 20,
+                  color: logoColor
                 ),
               ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.fromLTRB(0, 0, 20, 0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        'Tipo do teste',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: 'Ageo',
+                          fontSize: 16,
+                          color: logoColor
+                        ),
+                      ),
+                      Container(
+                        width: 110,
+                        height: 40,
+                        child: DropdownButtonFormField<String>(
+                          decoration: InputDecoration.collapsed(hintText: '',
+                          hoverColor: Colors.black),
+                          items: <String>['AV', 'SquidPad', 'AR', 'Freio'].map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Padding(
+                                padding: EdgeInsets.fromLTRB(10, 0, 0, 10),
+                                child: Text(
+                                  value,
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    fontFamily: 'Ageo',
+                                    fontSize: 15,
+                                    color: Colors.black
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                          onChanged: (String select) {
+                            searchtype = select;
+                          },
+                        ),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.all(Radius.circular(10))
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Column(
+                  children: <Widget>[
+                    Text(
+                      'Parâmetro',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'Ageo',
+                        fontSize: 16,
+                        color: logoColor
+                      ),
+                    ),
+                    Container(
+                      width: 180,
+                      height: 40,
+                      child: DropdownButtonFormField<String>(
+                        decoration: InputDecoration.collapsed(hintText: '',
+                        hoverColor: Colors.black),
+                        items: <String>['Velocidade', 'Rotação', 'Pressão freio', 'Aceleração X', 'Aceleração Y', 'Aceleração Z', 'Temperatura óleo', 'Temperatura motor'].map((String value) {
+                          return DropdownMenuItem<String>(
+                            value: value,
+                            child: Padding(
+                              padding: EdgeInsets.fromLTRB(10, 0, 0, 10),
+                              child: Text(
+                                value,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  fontFamily: 'Ageo',
+                                  fontSize: 15,
+                                  color: Colors.black
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                        onChanged: (String select) {
+                          searchpar = select;
+                        },
+                      ),
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.all(Radius.circular(10))
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
             Padding(
               padding: EdgeInsets.fromLTRB(0, 30, 0, 0),
@@ -597,7 +641,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   getGraph().then((_) {
                     setState(() {
                       for (Graph g in graphs) {
-                        if (search.text == g.typedata){
+                        if (searchtype == g.typedata){
                           graphsarray.add(graphopt(g));
                         }
                       }
@@ -636,13 +680,16 @@ class _HomeScreenState extends State<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
         ),
       ),
-    ) : 
+    ) : !tappedgraph?
     Stack(
       alignment: Alignment.topLeft,
       children: <Widget>[
         Container(color: Colors.transparent),
-        ListView(
-          children: graphsarray
+        Padding(
+          padding: EdgeInsets.fromLTRB(0, 35, 0, 0),
+          child: ListView(
+            children: graphsarray
+          ),
         ),
         Positioned(
           child: GestureDetector(
@@ -661,49 +708,149 @@ class _HomeScreenState extends State<HomeScreen> {
           left: 10,
         ),
       ],
+    ) :
+    Stack(
+      alignment: Alignment.topLeft,
+      children: <Widget>[
+        Container(color: Colors.transparent),
+        Column(
+          children: <Widget>[
+            Container(height: 200,),
+            Container(
+              height: 200,
+              child: BezierChart(
+                bezierChartScale: BezierChartScale.CUSTOM,
+                xAxisCustomValues: tim1,
+                series: [
+                  BezierLine(
+                    data: dataForGraph(graphdata, tim1),
+                  ),
+                ],
+                config: BezierChartConfig(
+                  pinchZoom: true,
+                  showDataPoints: false,
+                  verticalIndicatorColor: logoColor,
+                  displayYAxis: true,
+                  xAxisTextStyle: TextStyle(
+                    color: Colors.transparent,
+                  )
+                ),
+              ),
+            ),
+          ],
+        ),
+        Positioned(
+          child: GestureDetector(
+            onTap: () {
+              setState(() {
+                tappedgraph = false;
+              });
+            },
+            child: Icon(
+              Icons.arrow_back_ios,
+              size: 30,
+              color: logoColor,
+            ),
+          ),
+          top: 25,
+          left: 10,
+        ),
+      ],
     );
   }
 
   Widget graphopt(Graph g) {
-    return Stack(
-      alignment: AlignmentDirectional.bottomCenter,
-      children: <Widget>[
-        Container(
-          height: 100,
-        ),
-        Positioned(
-          bottom: 20,
-          left: 60,
-          child: Text(
-            g.date,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontFamily: 'HP',
-              fontSize: 15,
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          tappedgraph = true;
+          graphdata = icontrans(g.data);
+        });
+      },
+      child: Container(
+        height: 100,
+        color: Colors.transparent,
+        child: Stack(
+          alignment: AlignmentDirectional.bottomCenter,
+          children: <Widget>[
+            Container(
+              height: 100,
+            ),
+            Positioned(
+              top: 10,
+              right: 50,
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Container(
+                    height: 100,
+                    width: 200,
+                    child: BezierChart(
+                      bezierChartScale: BezierChartScale.CUSTOM,
+                      xAxisCustomValues: tim1,
+                      series: [
+                        BezierLine(
+                          data: dataForGraph(icontrans(g.data), tim1),
+                        ),
+                      ],
+                      config: BezierChartConfig(
+                        pinchZoom: true,
+                        showDataPoints: false,
+                        verticalIndicatorColor: logoColor,
+                        displayYAxis: false,
+                        xAxisTextStyle: TextStyle(
+                          color: Colors.transparent,
+                        )
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(0, 0, 0, 20),
+                    child: Text(
+                      g.date.substring(0, 19),
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'HP',
+                        fontSize: 15,
+                        color: textColor
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              height: 2,
+              width: 330,
               color: textColor
             ),
-          ),
+          ],
         ),
-        Container(
-          height: 2,
-          width: 330,
-          color: textColor
-        ),
-        Positioned(
-          bottom: 18,
-          left: 33,
-          child: Text(
-            g.typedata,
-            textAlign: TextAlign.center,
-            style: TextStyle(
-              fontFamily: 'HP',
-              fontSize: 15,
-              color: textColor
-            ),
-          ),
-        ),
-      ],
+      ),
     );
+  }
+
+  List<double> icontrans (String data) {
+    List<String> list = [];
+    List<double> listd = [];
+    List<double> pckg = List.filled(150, 0);
+    list = data.split(', ');
+    list.removeLast();
+    //print(list);
+    for (String i in list) {
+      listd.add(double.parse(i));
+    }
+    int s = 0;
+    for (double i in listd) {
+      //print(s);
+      pckg[s] = i;
+      if (s < 149){
+        s++;
+      }
+    }
+    //print(pckg);
+    //print(pckg);
+    return pckg;
   }
 
   Future signinUser() async {
