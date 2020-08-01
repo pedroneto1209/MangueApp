@@ -11,6 +11,8 @@ import 'package:mangueapp/bloc/blocs/user_bloc_provider.dart';
 import 'package:mangueapp/init.dart';
 import 'dart:convert';
 import 'package:flutter_blue/flutter_blue.dart';
+
+import 'models/classes/graph.dart';
 void main() {
   runApp(MyApp());
 }
@@ -43,10 +45,14 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  List<Graph> graphs;
   TextEditingController usernameText = TextEditingController();
   TextEditingController passwordText = TextEditingController();
+  TextEditingController search = TextEditingController();
 
   bool graph = false;
+  bool searched = false;
+  List<Widget> graphsarray = [];
 
   GraphBloc graphBloc;
   Repository _repository = Repository();
@@ -326,7 +332,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void addGraph (String data, String date, String datatype) async {
     await _repository.addUserGraph(apiKey, data, date, datatype);
-    
+  }
+
+  Future getGraph () async {
+    graphs = await _repository.getGraphs(apiKey);
   }
 
   String listString(List<double> list) {
@@ -507,7 +516,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget databasewidget(){
-    return Container(
+    return !searched ? Container(
       child:
       Center(
         child: 
@@ -534,6 +543,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Padding(
                     padding: EdgeInsets.fromLTRB(38, 0, 10, 9),
                     child: TextField(
+                      controller: search,
                       style: TextStyle(
                         fontFamily: 'Ageo',
                         fontSize: 18,
@@ -548,6 +558,19 @@ class _HomeScreenState extends State<HomeScreen> {
                         disabledBorder: InputBorder.none,
                         counterText: '',
                       ),
+                      onSubmitted: (value) {
+                        graphsarray = [];
+                        getGraph().then((_) {
+                          setState(() {
+                            for (Graph g in graphs) {
+                              if (value == g.typedata) {
+                                graphsarray.add(graphopt(g));
+                              }
+                            }
+                            searched = true;
+                          });
+                        });
+                      },
                     ),
                     ),
                     decoration: BoxDecoration(
@@ -570,7 +593,17 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: EdgeInsets.fromLTRB(0, 30, 0, 0),
               child: GestureDetector(
                 onTap: () {
-                  Navigator.pushNamed(context, 'DataBase');
+                  graphsarray = [];
+                  getGraph().then((_) {
+                    setState(() {
+                      for (Graph g in graphs) {
+                        if (search.text == g.typedata){
+                          graphsarray.add(graphopt(g));
+                        }
+                      }
+                      searched = true;
+                    });
+                  });
                 },
                 child: Container(
                   height: 30,
@@ -603,6 +636,73 @@ class _HomeScreenState extends State<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.center,
         ),
       ),
+    ) : 
+    Stack(
+      alignment: Alignment.topLeft,
+      children: <Widget>[
+        Container(color: Colors.transparent),
+        ListView(
+          children: graphsarray
+        ),
+        Positioned(
+          child: GestureDetector(
+            onTap: () {
+              setState(() {
+                searched = false;
+              });
+            },
+            child: Icon(
+              Icons.arrow_back_ios,
+              size: 30,
+              color: logoColor,
+            ),
+          ),
+          top: 25,
+          left: 10,
+        ),
+      ],
+    );
+  }
+
+  Widget graphopt(Graph g) {
+    return Stack(
+      alignment: AlignmentDirectional.bottomCenter,
+      children: <Widget>[
+        Container(
+          height: 100,
+        ),
+        Positioned(
+          bottom: 20,
+          left: 60,
+          child: Text(
+            g.date,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'HP',
+              fontSize: 15,
+              color: textColor
+            ),
+          ),
+        ),
+        Container(
+          height: 2,
+          width: 330,
+          color: textColor
+        ),
+        Positioned(
+          bottom: 18,
+          left: 33,
+          child: Text(
+            g.typedata,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'HP',
+              fontSize: 15,
+              color: textColor
+            ),
+          ),
+        ),
+      ],
     );
   }
 

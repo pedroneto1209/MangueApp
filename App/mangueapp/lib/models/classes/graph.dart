@@ -1,5 +1,5 @@
 class Graph {
-  String userId;
+  int userId;
   String data;
   String typedata;
   String date;
