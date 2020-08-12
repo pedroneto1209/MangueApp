@@ -33,6 +33,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
                   save('colorCircle', 0xFF666666);
                   saves('colorImg', 'assets/Icons/Header/manguebeat.png');
                   saves('colorImgC', 'assets/Icons/Crab/manguebeat.png');
+                  saves('mapStyle', 'assets/Maps/manguebeat.json');
                   setState(() {
                     backgroundDown = Color(0xFF101820);
                     backgroundMid = Color(0xFF090D11);
@@ -42,6 +43,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
                     circleBackground = Color(0xFF666666);
                     img = 'assets/Icons/Header/manguebeat.png';
                     crab = 'assets/Icons/Crab/manguebeat.png';
+                    mapStyle = 'assets/Maps/manguebeat.json';
                     Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
                   });
                 },
@@ -58,6 +60,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
                   save('colorCircle', 0xFF6F7C80);
                   saves('colorImg', 'assets/Icons/Header/caxanga.png');
                   saves('colorImgC', 'assets/Icons/Crab/caxanga.png');
+                  saves('mapStyle', 'assets/Maps/caxanga.json');
                   setState(() {
                     backgroundDown = Color(0xFFF2F3F4);
                     backgroundMid = Color(0xFFDADEDF);
@@ -67,6 +70,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
                     circleBackground = Color(0xFF6F7C80);
                     img = 'assets/Icons/Header/caxanga.png';
                     crab = 'assets/Icons/Crab/caxanga.png';
+                    mapStyle = 'assets/Maps/caxanga.json';
                     Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
                   });
                 },
@@ -83,6 +87,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
                   save('colorCircle', 0xFF001B3A);
                   saves('colorImg', 'assets/Icons/Header/capibaribe.png');
                   saves('colorImgC', 'assets/Icons/Crab/capibaribe.png');
+                  saves('mapStyle', 'assets/Maps/capibaribe.json');
                   setState(() {
                     backgroundDown = Color(0xFF00316E);
                     backgroundMid = Color(0xFF00316E);
@@ -92,6 +97,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
                     circleBackground = Color(0xFF001B3A);
                     img = 'assets/Icons/Header/capibaribe.png';
                     crab = 'assets/Icons/Crab/capibaribe.png';
+                    mapStyle = 'assets/Maps/capibaribe.json';
                     Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
                   });
                 },
@@ -108,6 +114,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
                   save('colorCircle', 0xFF260101);
                   saves('colorImg', 'assets/Icons/Header/mauritsstad.png');
                   saves('colorImgC', 'assets/Icons/Crab/mauritsstad.png');
+                  saves('mapStyle', 'assets/Maps/mauritsstad.json');
                   setState(() {
                     backgroundDown = Color(0xFFCAB7A1);
                     backgroundMid = Color(0xFFCAB7A1);
@@ -117,6 +124,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
                     circleBackground = Color(0xFF260101);
                     img = 'assets/Icons/Header/mauritsstad.png';
                     crab = 'assets/Icons/Crab/mauritsstad.png';
+                    mapStyle = 'assets/Maps/mauritsstad.json';
                     Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
                   });
                 },
@@ -133,6 +141,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
                   save('colorCircle', 0xFF999999);
                   saves('colorImg', 'assets/Icons/Header/jaqueira.png');
                   saves('colorImgC', 'assets/Icons/Crab/jaqueira.png');
+                  saves('mapStyle', 'assets/Maps/jaqueira.json');
                   setState(() {
                     backgroundDown = Color(0xFFE5E7E1);
                     backgroundMid = Color(0xFFE5E7E1);
@@ -142,6 +151,7 @@ class _ThemeScreenState extends State<ThemeScreen> {
                     circleBackground = Color(0xFF999999);
                     img = 'assets/Icons/Header/jaqueira.png';
                     crab = 'assets/Icons/Crab/jaqueira.png';
+                    mapStyle = 'assets/Maps/jaqueira.json';
                     Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
                   });
                 },

@@ -12,6 +12,7 @@ Color logoColor = Color(0xFF087234);
 Color circleBackground = Color(0xFF666666);
 String img = 'assets/Icons/Header/manguebeat.png';
 String crab = 'assets/Icons/Crab/manguebeat.png';
+String mapStyle = 'assets/Maps/manguebeat.json';
 StreamController<List<int>> cont = StreamController<List<int>>.broadcast();
 Stream listStream = cont.stream;
 bool isready;

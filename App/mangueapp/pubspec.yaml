@@ -47,6 +47,7 @@ flutter:
   assets:
       - assets/Icons/Crab/
       - assets/Icons/Header/
+      - assets/Maps/
       - assets/
   fonts:
     - family: Ageoextrabold

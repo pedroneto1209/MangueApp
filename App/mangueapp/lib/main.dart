@@ -75,7 +75,7 @@ class _HomeScreenState extends State<HomeScreen> {
   double long = -34.8813;
 
   void _setMapStyle() async {
-    String style = await DefaultAssetBundle.of(context).loadString('assets/map_style.json');
+    String style = await DefaultAssetBundle.of(context).loadString(mapStyle);
     mapController.setMapStyle(style);
   }
   //end of map requirements
@@ -112,6 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: <Widget> [
             Container(
               child: GoogleMap(
+                myLocationButtonEnabled: false,
                 onMapCreated: _onMapCreated,
                 initialCameraPosition: CameraPosition(
                   target: LatLng(lat, long),
@@ -119,42 +120,42 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            Stack(
-              alignment: AlignmentDirectional.center,
-              children: <Widget>[
-                Container(
-                  height: 42,
-                  width: MediaQuery. of(context).size.width/4,
-                  color: Colors.transparent,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: backgroundDown,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(10),
-                        topRight: Radius.circular(10),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.5),
-                          spreadRadius: 5,
-                          blurRadius: 7,
-                          offset: Offset(0, 3), // changes position of shadow
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Text(
-                  '150.00 Km/h',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontFamily: 'HP',
-                    fontSize: 12,
-                    color: logoColor
-                  ),
-                ),
-              ],
-            ),
+            //Stack(
+            //  alignment: AlignmentDirectional.center,
+            //  children: <Widget>[
+            //    Container(
+            //      height: 42,
+            //      width: MediaQuery. of(context).size.width/4,
+            //      color: Colors.transparent,
+            //      child: Container(
+            //        decoration: BoxDecoration(
+            //          color: backgroundDown,
+            //          borderRadius: BorderRadius.only(
+            //            topLeft: Radius.circular(10),
+            //            topRight: Radius.circular(10),
+            //          ),
+            //          boxShadow: [
+            //            BoxShadow(
+            //              color: Colors.black.withOpacity(0.5),
+            //              spreadRadius: 5,
+            //              blurRadius: 7,
+            //              offset: Offset(0, 3), // changes position of shadow
+            //            ),
+            //          ],
+            //        ),
+            //      ),
+            //    ),
+            //    Text(
+            //      '150.00 Km/h',
+            //      textAlign: TextAlign.center,
+            //      style: TextStyle(
+            //        fontFamily: 'HP',
+            //        fontSize: 12,
+            //        color: logoColor
+            //      ),
+            //    ),
+            //  ],
+            //),
           ]
         ),
         StreamBuilder<List<int>>(
@@ -202,10 +203,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       Container(
                         height: 200,
                         child: BezierChart(
+                          
                           bezierChartScale: BezierChartScale.CUSTOM,
                           xAxisCustomValues: tim,
                           series: [
                             BezierLine(
+                              lineColor: textColor,
                               data: dataForGraph(pckg, tim),
                             ),
                           ],
@@ -215,6 +218,9 @@ class _HomeScreenState extends State<HomeScreen> {
                             displayYAxis: true,
                             xAxisTextStyle: TextStyle(
                               color: Colors.transparent,
+                            ),
+                            yAxisTextStyle: TextStyle(
+                              color: logoColor
                             )
                           ),
                         ),
@@ -359,6 +365,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: <Widget> [
               Container(
                 child: GoogleMap(
+                  myLocationButtonEnabled: false,
                   onMapCreated: _onMapCreated,
                   initialCameraPosition: CameraPosition(
                     target: LatLng(lat, long),
@@ -366,42 +373,42 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-              Stack(
-                alignment: AlignmentDirectional.center,
-                children: <Widget>[
-                  Container(
-                    height: 42,
-                    width: MediaQuery. of(context).size.width/4,
-                    color: Colors.transparent,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: backgroundDown,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(10),
-                          topRight: Radius.circular(10),
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.5),
-                            spreadRadius: 5,
-                            blurRadius: 7,
-                            offset: Offset(0, 3), // changes position of shadow
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  Text(
-                    '150.00 Km/h',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: 'HP',
-                      fontSize: 12,
-                      color: logoColor
-                    ),
-                  ),
-                ],
-              ),
+              //Stack(
+              //  alignment: AlignmentDirectional.center,
+              //  children: <Widget>[
+              //    Container(
+              //      height: 42,
+              //      width: MediaQuery. of(context).size.width/4,
+              //      color: Colors.transparent,
+              //      child: Container(
+              //        decoration: BoxDecoration(
+              //          color: backgroundDown,
+              //          borderRadius: BorderRadius.only(
+              //            topLeft: Radius.circular(10),
+              //            topRight: Radius.circular(10),
+              //          ),
+              //          boxShadow: [
+              //            BoxShadow(
+              //              color: Colors.black.withOpacity(0.5),
+              //              spreadRadius: 5,
+              //              blurRadius: 7,
+              //              offset: Offset(0, 3), // changes position of shadow
+              //            ),
+              //          ],
+              //        ),
+              //      ),
+              //    ),
+              //    Text(
+              //      '150.00 Km/h',
+              //      textAlign: TextAlign.center,
+              //      style: TextStyle(
+              //        fontFamily: 'HP',
+              //        fontSize: 12,
+              //        color: logoColor
+              //      ),
+              //    ),
+              //  ],
+              //),
           ]
         ),
           Container(
@@ -723,6 +730,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 xAxisCustomValues: tim1,
                 series: [
                   BezierLine(
+                    lineColor: textColor,
                     data: dataForGraph(graphdata, tim1),
                   ),
                 ],
@@ -733,6 +741,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   displayYAxis: true,
                   xAxisTextStyle: TextStyle(
                     color: Colors.transparent,
+                  ),
+                  yAxisTextStyle: TextStyle(
+                    color: logoColor
                   )
                 ),
               ),
@@ -790,6 +801,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       xAxisCustomValues: tim1,
                       series: [
                         BezierLine(
+                          lineColor: textColor,
                           data: dataForGraph(icontrans(g.data), tim1),
                         ),
                       ],
@@ -800,6 +812,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         displayYAxis: false,
                         xAxisTextStyle: TextStyle(
                           color: Colors.transparent,
+                        ),
+                        yAxisTextStyle: TextStyle(
+                          color: logoColor
                         )
                       ),
                     ),
