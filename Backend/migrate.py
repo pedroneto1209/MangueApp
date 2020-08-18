@@ -14,5 +14,4 @@ manager.add_command('db', MigrateCommand)
 #db migrate preenche a migração com as mudanças necessarias e gera a tabela com as colunas de modelos
 #db upgrade repetir todas as vezes que os modelos mudarem
 
-if __name__ == '__main__':
-    manager.run()
+manager.run()

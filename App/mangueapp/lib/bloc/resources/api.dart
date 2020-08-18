@@ -10,7 +10,7 @@ class ApiProvider {
 
   Future signinUser(String username, String password, String apiKey) async {
     final response = await client
-        .post("http://321a1f8371e4.ngrok.io/api/signin",
+        .post("https://mangue-app.herokuapp.com/api/signin",
         headers: {
           "Authorization": apiKey
         },
@@ -31,7 +31,7 @@ class ApiProvider {
 
   Future<User> registerUser(String username, String firstname, String lastname, String password, String email) async {
     final response = await client
-        .post("http://321a1f8371e4.ngrok.io/api/register",
+        .post("https://mangue-app.herokuapp.com/api/register",
         body: jsonEncode({
           "email": email,
           "username": username,
@@ -53,7 +53,7 @@ class ApiProvider {
 
   Future<List<Graph>> getGraphs(String apiKey) async {
     final response = await client
-        .get("http://321a1f8371e4.ngrok.io/api/graphs",
+        .get("https://mangue-app.herokuapp.com/api/graphs",
         headers: {
           'Authorization' : apiKey
         }
@@ -74,7 +74,7 @@ class ApiProvider {
 
   Future addUserGraph(String apiKey, String data, String date, String datatype) async {
     final response = await client
-        .post("http://321a1f8371e4.ngrok.io/api/graphs",
+        .post("https://mangue-app.herokuapp.com/api/graphs",
         headers: {
           'Authorization' : apiKey
         },

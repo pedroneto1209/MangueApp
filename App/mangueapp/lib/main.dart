@@ -522,6 +522,19 @@ class _HomeScreenState extends State<HomeScreen> {
     return double.parse(s);
   }
 
+  Widget optwidg = Padding(
+    padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+    child: Text(
+      'Pesquisar',
+      textAlign: TextAlign.center,
+      style: TextStyle(
+        fontFamily: 'Ageoextrabold',
+        fontSize: 18,
+        color: textColor
+      )
+    ),
+  );
+
   Widget databasewidget(){
     return !searched ? Container(
       child:
@@ -655,22 +668,20 @@ class _HomeScreenState extends State<HomeScreen> {
                       searched = true;
                     });
                   });
+                  setState(() {
+                    optwidg = Center(
+                      child: Container(
+                        width: 15,
+                        height: 15,
+                        child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(textColor),),
+                      ),
+                    );
+                  });
                 },
                 child: Container(
                   height: 30,
                   width: 130,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
-                    child: Text(
-                      'Pesquisar',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: 'Ageoextrabold',
-                        fontSize: 18,
-                        color: textColor
-                      )
-                    ),
-                  ),
+                  child: optwidg,
                   decoration: BoxDecoration(
                     color: Colors.transparent,
                     borderRadius: BorderRadius.all(Radius.circular(10)),
@@ -703,6 +714,18 @@ class _HomeScreenState extends State<HomeScreen> {
             onTap: () {
               setState(() {
                 searched = false;
+                optwidg = Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+                  child: Text(
+                    'Pesquisar',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontFamily: 'Ageoextrabold',
+                      fontSize: 18,
+                      color: textColor
+                    )
+                  )
+                );
               });
             },
             child: Icon(

@@ -27,9 +27,23 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
+  Widget optwidg = Padding(
+    padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
+    child: Text(
+      'Login',
+      textAlign: TextAlign.center,
+      style: TextStyle(
+        fontFamily: 'Ageoextrabold',
+        fontSize: 18,
+        color: textColor
+      )
+    ),
+  );
+
   Widget getSigninPage(){
     TextEditingController usernameText = new TextEditingController();
     TextEditingController passwordText = new TextEditingController();
+
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -112,6 +126,15 @@ class _LoginPageState extends State<LoginPage> {
                           widget.login();
                         });
                       }
+                      setState(() {
+                        optwidg = Center(
+                          child: Container(
+                            width: 15,
+                            height: 15,
+                            child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(textColor),),
+                          ),
+                        );
+                      });
                     },
                     controller: passwordText,
                     obscureText: true,
@@ -158,22 +181,20 @@ class _LoginPageState extends State<LoginPage> {
                     widget.login();
                   });
                 }
+                setState(() {
+                  optwidg = Center(
+                    child: Container(
+                      width: 15,
+                      height: 15,
+                      child: CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(textColor),),
+                    ),
+                  );
+                });
               },
               child: Container(
                 height: 30,
                 width: 130,
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
-                  child: Text(
-                    'Login',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: 'Ageoextrabold',
-                      fontSize: 18,
-                      color: textColor
-                    )
-                  ),
-                ),
+                child: optwidg,
                 decoration: BoxDecoration(
                   color: Colors.transparent,
                   borderRadius: BorderRadius.all(Radius.circular(10)),

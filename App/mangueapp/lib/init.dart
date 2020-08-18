@@ -10,6 +10,7 @@ Color backgroundUp = Color(0xFF000000);
 Color textColor = Color(0xFFFFFFFF);
 Color logoColor = Color(0xFF087234);
 Color circleBackground = Color(0xFF666666);
+
 String img = 'assets/Icons/Header/manguebeat.png';
 String crab = 'assets/Icons/Crab/manguebeat.png';
 String mapStyle = 'assets/Maps/manguebeat.json';
@@ -19,6 +20,7 @@ bool isready;
 bool isconn = false;
 BluetoothDevice devv;
 String graphname;
+int nottheme;
 
 class InitScreen extends StatefulWidget {
   @override
@@ -37,7 +39,9 @@ class _InitScreenState extends State<InitScreen> {
   void initState() {
     super.initState();
 
-    if (read('colorBackD') != null) {
+    read('colorBackD').then((value) {nottheme = value;});
+
+    if (nottheme != null) {
       read('colorBackD').then((value) {backgroundDown = Color(value);});
       read('colorBackM').then((value) {backgroundMid = Color(value);});
       read('colorBackU').then((value) {backgroundUp = Color(value);});
@@ -359,6 +363,22 @@ class _InitScreenState extends State<InitScreen> {
     );
   }
 
+  Widget optwid (String nameopt) {
+    return Positioned(
+      bottom: 20,
+      left: 60,
+      child: Text(
+        nameopt,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontFamily: 'HP',
+          fontSize: 15,
+          color: textColor
+        ),
+      ),
+    );
+  }
+
   Widget option(BluetoothDevice device, Widget icon) {
     String nameopt;
     if(device.name == ''){
@@ -366,6 +386,9 @@ class _InitScreenState extends State<InitScreen> {
     } else {
       nameopt = device.name;
     }
+    Widget optwidg;
+    optwidg = optwid(nameopt);
+
     return GestureDetector(
       onTap: () {
         devv = device;
@@ -383,19 +406,7 @@ class _InitScreenState extends State<InitScreen> {
             Container(
               height: 60,
             ),
-            Positioned(
-              bottom: 20,
-              left: 60,
-              child: Text(
-                nameopt,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'HP',
-                  fontSize: 15,
-                  color: textColor
-                ),
-              ),
-            ),
+            optwidg,
             Container(
               height: 2,
               width: 330,
