@@ -1,8 +1,11 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:mangueapp/main.dart';
+import 'package:mqtt_client/mqtt_client.dart';
+import 'package:mqtt_client/mqtt_server_client.dart';
 
 Color backgroundDown = Color(0xFF101820);
 Color backgroundMid = Color(0xFF090D11);
@@ -34,56 +37,102 @@ class _InitScreenState extends State<InitScreen> {
   List<Widget> cont = [Container()];
   FlutterBlue bluetoothInstance = FlutterBlue.instance;
   StreamSubscription scanSubscription;
-  
+
+  void connectMQTT() async {
+    final client = MqttServerClient('121.36.194.179', '');
+
+    client.setProtocolV311();
+
+    client.keepAlivePeriod = 60;
+
+    try {
+      await client.connect("EVS", "EVS");
+    } on NoConnectionException catch (e) {
+      // Raised by the client when connection fails.
+      print('EXAMPLE::client exception - $e');
+      client.disconnect();
+    } on SocketException catch (e) {
+      // Raised by the socket layer
+      print('EXAMPLE::socket exception - $e');
+      client.disconnect();
+    }
+
+    const pubTopic = 'TBox/V4X203XHE40200';
+    final builder = MqttClientPayloadBuilder();
+    builder.addString('Hello from mqtt_client');
+
+    client.subscribe(pubTopic, MqttQos.exactlyOnce);
+
+    /// Publish it
+    print('EXAMPLE::Publishing our topic');
+    client.publishMessage(pubTopic, MqttQos.exactlyOnce, builder.payload);
+  }
+
   @override
   void initState() {
     super.initState();
 
-    read('colorBackD').then((value) {nottheme = value;});
+    connectMQTT();
+
+    read('colorBackD').then((value) {
+      nottheme = value;
+    });
 
     if (nottheme != null) {
-      read('colorBackD').then((value) {backgroundDown = Color(value);});
-      read('colorBackM').then((value) {backgroundMid = Color(value);});
-      read('colorBackU').then((value) {backgroundUp = Color(value);});
-      read('colorText').then((value) {textColor = Color(value);});
-      read('colorLogo').then((value) {logoColor = Color(value);});
-      read('colorCircle').then((value) {circleBackground = Color(value);});
-      reads('colorImg').then((value) {img = value;});
-      reads('colorImgC').then((value) {crab = value;});
+      read('colorBackD').then((value) {
+        backgroundDown = Color(value);
+      });
+      read('colorBackM').then((value) {
+        backgroundMid = Color(value);
+      });
+      read('colorBackU').then((value) {
+        backgroundUp = Color(value);
+      });
+      read('colorText').then((value) {
+        textColor = Color(value);
+      });
+      read('colorLogo').then((value) {
+        logoColor = Color(value);
+      });
+      read('colorCircle').then((value) {
+        circleBackground = Color(value);
+      });
+      reads('colorImg').then((value) {
+        img = value;
+      });
+      reads('colorImgC').then((value) {
+        crab = value;
+      });
     }
 
     //checks bluetooth current state
     FlutterBlue.instance.state.listen((state) {
       if (state == BluetoothState.off) {
         setState(() {
-          cont = [Container(
-            height: 200,
-            child: Center(
-              child: Text('Por favor, ative seu bluetooth!',
-              style: TextStyle(
-                fontFamily: 'Ageoextrabold',
-                fontSize: 18,
-                color: textColor
-                )
-              )
-            )
-          )];
+          cont = [
+            Container(
+                height: 200,
+                child: Center(
+                    child: Text('Por favor, ative seu bluetooth!',
+                        style: TextStyle(
+                            fontFamily: 'Ageoextrabold',
+                            fontSize: 18,
+                            color: textColor))))
+          ];
         });
       } else if (state == BluetoothState.on) {
-        scanForDevices(); 
+        scanForDevices();
         setState(() {
-          cont = [Container(
-            height: 200,
-            child: Center(
-              child: Text('Procurando o dispositivo...',
-              style: TextStyle(
-                fontFamily: 'Ageoextrabold',
-                fontSize: 18,
-                color: textColor
-                )
-              )
-            )
-          )];
+          cont = [
+            Container(
+                height: 200,
+                child: Center(
+                    child: Text('Procurando o dispositivo...',
+                        style: TextStyle(
+                            fontFamily: 'Ageoextrabold',
+                            fontSize: 18,
+                            color: textColor))))
+          ];
         });
       }
     });
@@ -128,118 +177,105 @@ class _InitScreenState extends State<InitScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //Set appbar to control system icons color
-      appBar: PreferredSize(
-        preferredSize: Size.fromHeight(0),
-        child: AppBar(
-          backgroundColor: backgroundUp,
-        )
-      ),
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        child: Column(
-          children: <Widget>[
-            Padding(
-              padding: EdgeInsets.fromLTRB(0, 65, 0, 0),
-              child: Stack(
-                alignment: AlignmentDirectional.bottomCenter,
-                children: <Widget>[
-                    Container(
-                      height: 180,
-                      width: 292
+        //Set appbar to control system icons color
+        appBar: PreferredSize(
+            preferredSize: Size.fromHeight(0),
+            child: AppBar(
+              backgroundColor: backgroundUp,
+            )),
+        body: Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          child: Column(
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.fromLTRB(0, 65, 0, 0),
+                child: Stack(
+                  alignment: AlignmentDirectional.bottomCenter,
+                  children: <Widget>[
+                    Container(height: 180, width: 292),
+                    Positioned(
+                      bottom: 50,
+                      child: Image.asset(img, width: 134),
                     ),
-                  Positioned(
-                    bottom: 50,
-                    child: Image.asset(img, width: 134),
-                  ),
-                  Text(
-                    'mangue',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontFamily: 'Ageoextrabold',
-                      fontSize: 80,
-                      color: logoColor
-                    )
-                  ),
-                ],
+                    Text('mangue',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontFamily: 'Ageoextrabold',
+                            fontSize: 80,
+                            color: logoColor)),
+                  ],
+                ),
               ),
-            ),
-            Container(
-              height: 4,
-              width: 345,
-              color: Colors.transparent,
-              child: Container(
+              Container(
+                height: 4,
+                width: 345,
+                color: Colors.transparent,
+                child: Container(
                   decoration: BoxDecoration(
-                    color: textColor,
-                    borderRadius: BorderRadius.all(Radius.circular(10))
+                      color: textColor,
+                      borderRadius: BorderRadius.all(Radius.circular(10))),
                 ),
               ),
-            ),
-            Padding(
-              padding: EdgeInsets.fromLTRB(0, 10, 0, 5),
-              child: Text(
-                'Olá, Conecte-se ao baja!',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'Ageoextrabold',
-                  fontSize: 25,
-                  color: textColor
-                ),
-              ),
-            ),
-            //List of bluetooths
-            Container(
-              height: 250,
-              child: MediaQuery.removePadding(
-                context: context,
-                removeTop: true,
-                child: ListView(
-                  children: cont,
-                ),
-              ),
-            ),
-            //Link pro home
-            GestureDetector(
-              onTap: () {
-                isready = false;
-                Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
-              },
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(0, 42, 0, 0),
+              Padding(
+                padding: EdgeInsets.fromLTRB(0, 10, 0, 5),
                 child: Text(
-                  'Não quer se conectar? clique aqui para acessar.',
+                  'Olá, Conecte-se ao baja!',
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    decoration: TextDecoration.underline,
-                    fontFamily: 'Ageoextrabold',
-                    fontSize: 15,
-                    color: logoColor
+                      fontFamily: 'Ageoextrabold',
+                      fontSize: 25,
+                      color: textColor),
+                ),
+              ),
+              //List of bluetooths
+              Container(
+                height: 250,
+                child: MediaQuery.removePadding(
+                  context: context,
+                  removeTop: true,
+                  child: ListView(
+                    children: cont,
                   ),
                 ),
-              )
-            ),
-          ],
-        ),
-        //Makes the gradient background
-        decoration: new BoxDecoration(
-          gradient: new LinearGradient(
+              ),
+              //Link pro home
+              GestureDetector(
+                  onTap: () {
+                    isready = false;
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => HomeScreen()));
+                  },
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(0, 42, 0, 0),
+                    child: Text(
+                      'Não quer se conectar? clique aqui para acessar.',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                          decoration: TextDecoration.underline,
+                          fontFamily: 'Ageoextrabold',
+                          fontSize: 15,
+                          color: logoColor),
+                    ),
+                  )),
+            ],
+          ),
+          //Makes the gradient background
+          decoration: new BoxDecoration(
+            gradient: new LinearGradient(
               begin: FractionalOffset.topCenter,
               end: FractionalOffset.bottomCenter,
               stops: [0.10, 0.25, 0.5],
               colors: [backgroundUp, backgroundMid, backgroundDown],
+            ),
           ),
-        ),
-      )
-    );
+        ));
   }
 
   List<Widget> fill(List<BluetoothDevice> list) {
     List<Widget> result = [];
     for (BluetoothDevice s in list) {
-      result.add(
-        option(s, Icon(Icons.bluetooth, color: logoColor))
-      );
+      result.add(option(s, Icon(Icons.bluetooth, color: logoColor)));
     }
     return result;
   }
@@ -279,10 +315,7 @@ class _InitScreenState extends State<InitScreen> {
                       'Selecione o próximo teste',
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontFamily: 'Ageo',
-                        fontSize: 16,
-                        color: textColor
-                      ),
+                          fontFamily: 'Ageo', fontSize: 16, color: textColor),
                     ),
                   ),
                   Padding(
@@ -291,9 +324,10 @@ class _InitScreenState extends State<InitScreen> {
                       width: 180,
                       height: 40,
                       child: DropdownButtonFormField<String>(
-                        decoration: InputDecoration.collapsed(hintText: '',
-                        hoverColor: Colors.black),
-                        items: <String>['AV', 'SquidPad', 'AR', 'Freio'].map((String value) {
+                        decoration: InputDecoration.collapsed(
+                            hintText: '', hoverColor: Colors.black),
+                        items: <String>['AV', 'SquidPad', 'AR', 'Freio']
+                            .map((String value) {
                           return DropdownMenuItem<String>(
                             value: value,
                             child: Padding(
@@ -302,10 +336,9 @@ class _InitScreenState extends State<InitScreen> {
                                 value,
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
-                                  fontFamily: 'Ageo',
-                                  fontSize: 15,
-                                  color: Colors.black
-                                ),
+                                    fontFamily: 'Ageo',
+                                    fontSize: 15,
+                                    color: Colors.black),
                               ),
                             ),
                           );
@@ -316,46 +349,40 @@ class _InitScreenState extends State<InitScreen> {
                       ),
                       decoration: BoxDecoration(
                           color: Colors.white,
-                          borderRadius: BorderRadius.all(Radius.circular(10))
-                      ),
+                          borderRadius: BorderRadius.all(Radius.circular(10))),
                     ),
                   ),
                   GestureDetector(
                     onTap: () {
                       Navigator.of(context).pop(true);
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => HomeScreen()));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => HomeScreen()));
                     },
                     child: Container(
                       height: 30,
                       width: 60,
                       child: Padding(
                         padding: const EdgeInsets.fromLTRB(0, 4, 0, 0),
-                        child: Text(
-                          'Ok!',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontFamily: 'Ageoextrabold',
-                            fontSize: 18,
-                            color: textColor
-                          )
-                        ),
+                        child: Text('Ok!',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                fontFamily: 'Ageoextrabold',
+                                fontSize: 18,
+                                color: textColor)),
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.transparent,
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                        border: Border.all(
-                          color: textColor,
-                          width: 1
-                        )
-                      ),
+                          color: Colors.transparent,
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                          border: Border.all(color: textColor, width: 1)),
                     ),
                   ),
                 ],
               ),
               decoration: BoxDecoration(
                   color: backgroundDown,
-                  borderRadius: BorderRadius.all(Radius.circular(10))
-              ),
+                  borderRadius: BorderRadius.all(Radius.circular(10))),
             ),
           ),
         );
@@ -363,25 +390,21 @@ class _InitScreenState extends State<InitScreen> {
     );
   }
 
-  Widget optwid (String nameopt) {
+  Widget optwid(String nameopt) {
     return Positioned(
       bottom: 20,
       left: 60,
       child: Text(
         nameopt,
         textAlign: TextAlign.center,
-        style: TextStyle(
-          fontFamily: 'HP',
-          fontSize: 15,
-          color: textColor
-        ),
+        style: TextStyle(fontFamily: 'HP', fontSize: 15, color: textColor),
       ),
     );
   }
 
   Widget option(BluetoothDevice device, Widget icon) {
     String nameopt;
-    if(device.name == ''){
+    if (device.name == '') {
       nameopt = 'Dispositivo sem nome';
     } else {
       nameopt = device.name;
@@ -407,16 +430,8 @@ class _InitScreenState extends State<InitScreen> {
               height: 60,
             ),
             optwidg,
-            Container(
-              height: 2,
-              width: 330,
-              color: textColor
-            ),
-            Positioned(
-              bottom: 18,
-              left: 33,
-              child: icon
-            ),
+            Container(height: 2, width: 330, color: textColor),
+            Positioned(bottom: 18, left: 33, child: icon),
           ],
         ),
       ),
