@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:bezier_chart/bezier_chart.dart';
@@ -6,6 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:mangueapp/bloc/resources/repository.dart';
 import 'package:mangueapp/models/UI/loginscreen.dart';
 import 'package:mangueapp/models/UI/theme.dart';
+import 'package:mqtt_client/mqtt_client.dart';
+import 'package:mqtt_client/mqtt_server_client.dart';
 import 'models/UI/circle.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,6 +21,64 @@ import 'models/classes/graph.dart';
 
 void main() {
   runApp(MyApp());
+}
+
+var client;
+
+double rpm = 0;
+double speed = 0;
+double accx = 0;
+double accy = 0;
+double accz = 0;
+double temp = 0;
+double lat = 0;
+double long = 0;
+
+void connectMQTT() async {
+  client = MqttServerClient('121.36.194.179', '');
+
+  client.setProtocolV311();
+
+  client.keepAlivePeriod = 60;
+
+  try {
+    await client.connect("EVS", "EVS");
+  } on NoConnectionException catch (e) {
+    // Raised by the client when connection fails.
+    print('EXAMPLE::client exception - $e');
+    client.disconnect();
+  } on SocketException catch (e) {
+    // Raised by the socket layer
+    print('EXAMPLE::socket exception - $e');
+    client.disconnect();
+  }
+
+  sendMQTT();
+}
+
+void sendMQTT() async {
+  print("connected");
+  while (true) {
+    print("sent");
+    await Future.delayed(Duration(seconds: 1));
+
+    const pubTopic = 'TBox/V4X203XHE40200';
+    final builder = MqttClientPayloadBuilder();
+    builder.addString({
+      "\"rpm\"": rpm,
+      "\"speed\"": speed,
+      "\"accx\"": accx,
+      "\"accy\"": accy,
+      "\"accz\"": accz,
+      "\"temp\"": temp,
+      "\"lat\"": lat,
+      "\"long\"": long
+    }.toString());
+
+    client.subscribe(pubTopic, MqttQos.exactlyOnce);
+
+    client.publishMessage(pubTopic, MqttQos.exactlyOnce, builder.payload);
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -74,14 +135,18 @@ class _HomeScreenState extends State<HomeScreen> {
     _setMapStyle();
   }
 
-  double lat = -8.05428;
-  double long = -34.8813;
-
   void _setMapStyle() async {
     String style = await DefaultAssetBundle.of(context).loadString(mapStyle);
     mapController.setMapStyle(style);
   }
   //end of map requirements
+
+  @override
+  void initState() {
+    super.initState();
+
+    connectMQTT();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -103,13 +168,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget getPagesNew() {
-    double rpm = 0;
-    double speed = 0;
-    double accx = 0;
-    double accy = 0;
-    double accz = 0;
-    double temp = 0;
-
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: TabBarView(physics: NeverScrollableScrollPhysics(), children: [
@@ -178,6 +236,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   accx = (byteData.getUint16(0) * 0.061 / 1000);
                   accy = (byteData.getUint16(2) * 0.061 / 1000);
                   accz = (byteData.getUint16(4) * 0.061 / 1000);
+                  lat = -23.162763;
+                  long = -45.7952192;
                 }
 
                 return !graph
@@ -388,7 +448,7 @@ class _HomeScreenState extends State<HomeScreen> {
               myLocationButtonEnabled: false,
               onMapCreated: _onMapCreated,
               initialCameraPosition: CameraPosition(
-                target: LatLng(lat, long),
+                target: LatLng(-23.162763, -45.7952192),
                 zoom: 11.0,
               ),
             ),
@@ -998,10 +1058,5 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       build(context);
     });
-  }
-
-  @override
-  void initState() {
-    super.initState();
   }
 }

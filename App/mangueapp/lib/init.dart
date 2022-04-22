@@ -38,41 +38,9 @@ class _InitScreenState extends State<InitScreen> {
   FlutterBlue bluetoothInstance = FlutterBlue.instance;
   StreamSubscription scanSubscription;
 
-  void connectMQTT() async {
-    final client = MqttServerClient('121.36.194.179', '');
-
-    client.setProtocolV311();
-
-    client.keepAlivePeriod = 60;
-
-    try {
-      await client.connect("EVS", "EVS");
-    } on NoConnectionException catch (e) {
-      // Raised by the client when connection fails.
-      print('EXAMPLE::client exception - $e');
-      client.disconnect();
-    } on SocketException catch (e) {
-      // Raised by the socket layer
-      print('EXAMPLE::socket exception - $e');
-      client.disconnect();
-    }
-
-    const pubTopic = 'TBox/V4X203XHE40200';
-    final builder = MqttClientPayloadBuilder();
-    builder.addString('Hello from mqtt_client');
-
-    client.subscribe(pubTopic, MqttQos.exactlyOnce);
-
-    /// Publish it
-    print('EXAMPLE::Publishing our topic');
-    client.publishMessage(pubTopic, MqttQos.exactlyOnce, builder.payload);
-  }
-
   @override
   void initState() {
     super.initState();
-
-    connectMQTT();
 
     read('colorBackD').then((value) {
       nottheme = value;
